@@ -20,50 +20,7 @@ License: GPL3
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-
     http://www.opensource.org/licenses/gpl-3.0.html
-*/
-
-/* 	Author's note
-	Before you start yelling about how this plugin is barely functional
-	or requires too much configuration (which, hopefully, when it's
-	finished, it won't, really), the reason I developed this plugin was
-	primarily with Cart66 in mind.  Cart66 is an awesome shop plugin for
-	WordPress, but it lacks some of the robust features of some of those
-	other shopping cart plugins and themes, like a dedicated storefront.
-	Cart66 takes the stance of "we'll set you up with the system, but
-	you're on your own with how you want to run that on your site."
-	Which is fine.  This plugin is intended to step in the middle and
-	create a dedicated product area for the stuff you're selling with
-	Cart66.  And if you're not using Cart66, this plugin will (hopefully)
-	support PayPal and Google Checkout, as well.
-	It might bear reiterating that any time a plugin tries to make
-	assumptions about the formatting and layout of your theme, there's
-	only a very small possibility the plugin will get it right. Therefore,
-	some theme customization will most likely be required no matter what
-	you're using, just to make the divs and headings match up. By using
-	this plugin, you're acknowledging that this is your responsibility
-	as the user of the plugin and if you have any questions, I will
-	do my best to help.
-*/
-
-/* changelog */
-/*
-	0.1
-		Initial development
-		added author's note and plugin meta
-		created the post type
-		added a custom taxonomy
-		created meta boxes for button codes
-		added custom icons
-		defined global variables for plugin path and plugin image path
-
-	0.2
-		changed tag icon to match the small icon and adjusted credit accordingly
-		added cross sales text meta field to use as anchor text for the cross sales link
-		added post thumbnail support to not assume the theme enables it (thumbnail size will need to be set within the theme, see the note on line 76)
-
-	0.3
 */
 
 /* 	let's define some global values we're going to use later
@@ -71,13 +28,15 @@ License: GPL3
 	define('product_plugin_path', WP_PLUGIN_URL . '/products/');
 	define('product_plugin_images', product_plugin_path . 'images/');
 
-/* create the custom post type */
-
-// add post thumbnail support
-// note, thumbnail size should be defined in the theme's functions.php file like this:
-// set_post_thumbnail_size( 200, 200, true ); // 200 pixels wide by 200 pixels tall, hard crop mode
-add_theme_support( 'post-thumbnails' );
-
+/**
+ * Products Post Type
+ * created the custom post type
+ * @author Chris Reynolds
+ * @since 0.1
+ * @link http://justintadlock.com/archives/2010/04/29/custom-post-types-in-wordpress
+ * @uses register_post_type
+ * @uses add_theme_support
+ */
 function post_type_products() {
     $labels = array(
 		'name' => _x('Products', 'post type general name'),
@@ -93,7 +52,7 @@ function post_type_products() {
 		'not_found_in_trash' => __('No products found in Trash'),
 		'view' =>  __('View Product'),
 		'parent_item_colon' => ''
-  );
+  	);
 	$args = array(
 		'labels' => $labels,
 		'public' => true,
@@ -108,14 +67,25 @@ function post_type_products() {
 		'exclude_from_search' => false,
 		'menu_position' => 5,
 		'taxonomies' => array('post_tag','product_category'),
-  );
+  	);
 
-  register_post_type( 'ap_products', $args );
+  	register_post_type( 'ap_products', $args );
+
+	// add post thumbnail support
+	// note, thumbnail size should be defined in the theme's functions.php file like this:
+	// set_post_thumbnail_size( 200, 200, true ); // 200 pixels wide by 200 pixels tall, hard crop mode
+	add_theme_support( 'post-thumbnails' );
 }
-
 add_action( 'init', 'post_type_products', 0 );
 
-// add a product category taxonomy for products to have their own types
+/**
+ * Product Categories
+ * add a product category taxonomy for products to have their own types
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses register_taxonomy
+ * @link http://codex.wordpress.org/Function_Reference/register_taxonomy
+ */
 function product_categories() {
 $product_category_labels = array(
 	'name' => __( 'Product Categories' ),
@@ -145,6 +115,14 @@ $product_category_labels = array(
 
 add_action( 'init', 'product_categories', 0 ); // taxonomy for product categories
 
+/**
+ * Add Products Settings Page
+ * adds the Settings page menu item in the Products menu
+ * @author Chris Reynolds
+ * @since 0.3
+ * @uses add_submenu_page
+ * @link http://codex.wordpress.org/Function_Reference/add_submenu_page
+ */
 function ap_products_add_page() {
     $page = add_submenu_page('edit.php?post_type=ap_products','Products Settings', 'Settings', 'administrator', 'ap_products_settings', 'ap_products_settings_page' );
     //add_action( 'admin_print_scripts-plugins.php', 'espresso_requirements_scripts' );
@@ -152,15 +130,28 @@ function ap_products_add_page() {
 }
 add_action( 'admin_menu', 'ap_products_add_page' );
 
-/* let's create some meta boxes */
-/* p.s. meta boxes are aw3x0m3 */
-
+/**
+ * Custom meta boxes
+ * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses add_meta_box
+ * p.s. meta boxes are aw3x0m3
+ */
 function custom_meta_boxes_products() {
+	// let's create some meta boxes
     add_meta_box("product-details", "Product Details", "meta_cpt_product", "ap_products", "normal", "low");
 }
-
 add_action('admin_menu', 'custom_meta_boxes_products');
 
+/**
+ * Meta CPT Product
+ * this actually handles how the meta boxes will appear on the Edit Product pages
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses wp_create_nonce
+ * @uses get_post_meta
+ */
 function meta_cpt_product() {
     global $post;
 
@@ -171,7 +162,7 @@ function meta_cpt_product() {
 
 	//ajax upload
 	$wud = wp_upload_dir();
-
+	// TODO replace this business with wordpress media uploader
 ?>
 
 		<script type="text/javascript">
@@ -212,6 +203,7 @@ function meta_cpt_product() {
 }
 
 /* deal with uploading image */
+// TODO replace this business with the WordPress media uploader
 if(isset ($_GET["qqfile"]) && strlen($_GET["qqfile"]))
 {
 	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
@@ -233,7 +225,7 @@ if(isset ($_GET["qqfile"]) && strlen($_GET["qqfile"]))
 
 
 function product_uploader_scripts() {
-
+// TODO replace this business with the WordPress media uploader
 	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
 
 	wp_enqueue_script('fileuploader', $pluginurl.'/includes/fileuploader.js',array('jquery'));
