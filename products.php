@@ -26,6 +26,7 @@ License: GPL3
 /* 	let's define some global values we're going to use later
 	we're going to assume you're using wp 2.6+ and not worry about defining WP_PLUGIN_URL */
 	define('product_plugin_path', WP_PLUGIN_URL . '/products/');
+	define('product_plugin_dir', WP_PLUGIN_DIR . '/products/');
 	define('product_plugin_images', product_plugin_path . 'images/');
 
 /**
@@ -151,6 +152,8 @@ add_action( 'admin_menu', 'ap_products_add_page' );
 function ap_products_settings_page() {
 	if ( ! isset( $_REQUEST['settings-updated'] ) )
 		$_REQUEST['settings-updated'] = false;
+
+	require_once( product_plugin_dir . 'inc/option-setup.php' );
 	// we're using standard WP admin page markup
 	?>
 	<div class="wrap">
@@ -164,11 +167,8 @@ function ap_products_settings_page() {
 			<?php //opal_side_box(); ?>
 			<div id="post-body-content">
 					<form method="post" action="options.php">
-						<div id="tabs">
-							<?php settings_fields( 'ap_products_settings' ); ?>
-							<?php /* some settings go here */ ?>
-							<?php //opal_do_theme_options(); ?>
-						</div>
+						<?php settings_fields( 'ap_products_settings' ); ?>
+						<?php ap_products_do_options(); ?>
 						<p class="submit">
 							<input type="submit" class="button-primary" value="<?php _e( 'Save Options', 'products' ); ?>" />
 							<input type="hidden" name="ap-core-settings-submit" value="Y" />
