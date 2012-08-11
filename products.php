@@ -131,6 +131,24 @@ function ap_products_add_page() {
 add_action( 'admin_menu', 'ap_products_add_page' );
 
 /**
+ * Products Settings Page
+ * this is where the real settings page business is
+ * @author Chris Reynolds
+ * @since 0.3
+ * 
+ */
+function ap_products_settings_page() {
+	// we're using standard WP admin page markup
+	?>
+	<div class="wrap">
+		<div id="icon-edit" class="icon32 icon32-posts-ap_products"><br></div>
+		<h2>Products Plugin Settings</h2>
+		<?php /* some settings go here */ ?>
+	</div>
+	<?php
+}
+
+/**
  * Custom meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
