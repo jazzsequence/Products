@@ -26,18 +26,22 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ### 0.3
 
+* added settings page menu item
+* fixed menu icon issue
+* added readme.md
+
 ### 0.2
 
-changed tag icon to match the small icon and adjusted credit accordingly  
-added cross sales text meta field to use as anchor text for the cross sales link  
-added post thumbnail support to not assume the theme enables it (thumbnail size will need to be set within the theme, see the note on line 76)
+* changed tag icon to match the small icon and adjusted credit accordingly
+* added cross sales text meta field to use as anchor text for the cross sales link
+* added post thumbnail support to not assume the theme enables it (thumbnail size will need to be set within the theme, see the note on line 76)
 
 ### 0.1
 
-Initial development  
-added author's note and plugin meta  
-created the post type  
-added a custom taxonomy  
-created meta boxes for button codes  
-added custom icons  
-defined global variables for plugin path and plugin image path
+* Initial development
+* added author's note and plugin meta
+* created the post type
+* added a custom taxonomy
+* created meta boxes for button codes
+* added custom icons
+* defined global variables for plugin path and plugin image path
