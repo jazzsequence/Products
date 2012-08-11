@@ -149,12 +149,34 @@ add_action( 'admin_menu', 'ap_products_add_page' );
  * @since 0.3
  */
 function ap_products_settings_page() {
+	if ( ! isset( $_REQUEST['settings-updated'] ) )
+		$_REQUEST['settings-updated'] = false;
 	// we're using standard WP admin page markup
 	?>
 	<div class="wrap">
+		<?php if ( false !== $_REQUEST['settings-updated'] ) : ?>
+			<div class="updated fade"><p><strong><?php _e( 'Options saved', 'products' ); ?></strong></p></div>
+		<?php endif; ?>
 		<div id="icon-edit" class="icon32 icon32-posts-ap_products"><br></div>
 		<h2>Products Plugin Options</h2>
-		<?php /* some settings go here */ ?>
+		<div id="poststuff" class="metabox-holder has-right-sidebar">
+			<div id="post-body" class="metabox-holder columns-2">
+			<?php //opal_side_box(); ?>
+			<div id="post-body-content">
+					<form method="post" action="options.php">
+						<div id="tabs">
+							<?php settings_fields( 'ap_products_settings' ); ?>
+							<?php /* some settings go here */ ?>
+							<?php //opal_do_theme_options(); ?>
+						</div>
+						<p class="submit">
+							<input type="submit" class="button-primary" value="<?php _e( 'Save Options', 'products' ); ?>" />
+							<input type="hidden" name="ap-core-settings-submit" value="Y" />
+						</p>
+					</form>
+				</div><!-- closes post-body-content -->
+			</div><!-- closes post-body -->
+		</div><!-- closes poststuff -->
 	</div>
 	<?php
 }
