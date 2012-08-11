@@ -3,7 +3,7 @@
 Plugin Name: Products
 Plugin URI: http://arcanepalette.com
 Description: A simple shop plugin based on custom post types with integrated support for Cart66
-Version: 0.2
+Version: 0.3
 Author: Arcane Palette Creative Design
 Author URI: http://arcanepalette.com/
 License: GPL3
@@ -62,6 +62,8 @@ License: GPL3
 		changed tag icon to match the small icon and adjusted credit accordingly
 		added cross sales text meta field to use as anchor text for the cross sales link
 		added post thumbnail support to not assume the theme enables it (thumbnail size will need to be set within the theme, see the note on line 76)
+
+	0.3
 */
 
 /* 	let's define some global values we're going to use later
@@ -142,6 +144,13 @@ $product_category_labels = array(
 	}
 
 add_action( 'init', 'product_categories', 0 ); // taxonomy for product categories	
+
+function ap_products_add_page() {
+    $page = add_submenu_page('edit.php?post_type=ap_products','Products Settings', 'Settings', 'administrator', 'ap_products_settings', 'ap_products_settings_page' );
+    //add_action( 'admin_print_scripts-plugins.php', 'espresso_requirements_scripts' );
+    //add_action( 'admin_print_scripts-' . $page, 'espresso_requirements_scripts' );
+}
+add_action( 'admin_menu', 'ap_products_add_page' );
 
 /* let's create some meta boxes */
 /* p.s. meta boxes are aw3x0m3 */
