@@ -116,6 +116,18 @@ $product_category_labels = array(
 add_action( 'init', 'product_categories', 0 ); // taxonomy for product categories
 
 /**
+ * Register Product Options
+ * sets up the settings for the options page
+ * @author Chris Reynolds
+ * @since 0.3
+ * @uses register_setting
+ */
+function ap_products_settings_init() {
+	register_setting( 'ap_products_settings', 'ap_products_settings' /*, add sanitization callback */ );
+}
+add_action( 'admin_init', 'ap_products_settings_init' );
+
+/**
  * Add Products Settings Page
  * adds the Settings page menu item in the Products menu
  * @author Chris Reynolds
@@ -124,25 +136,24 @@ add_action( 'init', 'product_categories', 0 ); // taxonomy for product categorie
  * @link http://codex.wordpress.org/Function_Reference/add_submenu_page
  */
 function ap_products_add_page() {
-    $page = add_submenu_page('edit.php?post_type=ap_products','Products Settings', 'Settings', 'administrator', 'ap_products_settings', 'ap_products_settings_page' );
+    $page = add_submenu_page('edit.php?post_type=ap_products','Products Options', 'Options', 'administrator', 'ap_products_settings', 'ap_products_settings_page' );
     //add_action( 'admin_print_scripts-plugins.php', 'espresso_requirements_scripts' );
     //add_action( 'admin_print_scripts-' . $page, 'espresso_requirements_scripts' );
 }
 add_action( 'admin_menu', 'ap_products_add_page' );
 
 /**
- * Products Settings Page
+ * Products Options Page
  * this is where the real settings page business is
  * @author Chris Reynolds
  * @since 0.3
- * 
  */
 function ap_products_settings_page() {
 	// we're using standard WP admin page markup
 	?>
 	<div class="wrap">
 		<div id="icon-edit" class="icon32 icon32-posts-ap_products"><br></div>
-		<h2>Products Plugin Settings</h2>
+		<h2>Products Plugin Options</h2>
 		<?php /* some settings go here */ ?>
 	</div>
 	<?php
