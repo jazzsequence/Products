@@ -182,6 +182,30 @@ function ap_products_settings_page() {
 }
 
 /**
+ * Merchant options
+ * determines which merchant you want to use.  Currently-supported options are Cart66, PayPal & Google Checkout
+ * @author Chris Reynolds
+ * @since 0.3
+ */
+function products_merchant_options() {
+	$products_merchant = array(
+		'cart66' => array(
+			'value' => 'cart66',
+			'label' => __( 'Cart66', 'products' )
+		),
+		'google' => array(
+			'value' => 'google',
+			'label' => __( 'Google Checkout', 'products' )
+		),
+		'paypal' => array(
+			'value' => 'paypal',
+			'label' => __( 'PayPal Standard', 'products' )
+		)
+	);
+	return $products_merchant;
+}
+
+/**
  * Custom meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
