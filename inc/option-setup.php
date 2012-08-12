@@ -58,23 +58,23 @@ function products_HTML_URI_option_display() {
 			});
 		});
 	</script>
-	<tr valign="top" id="html_uri"><th scope="row"><?php _e( 'Use HTML code or URL?', 'products' ); ?></th>
-		<td>
-			<select name="ap_products_settings[products-html]">
-			<?php
-				$selected = $options['products-html'];
-				$help = __( 'If HTML is selected, you can copy and paste the HTML code for your button from PayPal or Google into the box on the products page.  If URL is selected, you can use the direct URL to the checkout page on either PayPal or Google.', 'products' );
-				foreach ( products_HTML_URI_option() as $option ) {
-					$label = $option['label'];
-					$value = $option['value'];
-					echo '<option value="'. $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
-				} ?>
-			</select><br />
-			<label class="description" for="ap_products_settings[products-html]"><?php echo $help; ?></label>
-		</td>
-	</tr>
-
-	<?php
+	<?php if ( $options['products-merchant'] != 'cart66' ) { ?>
+		<tr valign="top" id="html_uri"><th scope="row"><?php _e( 'Use HTML code or URL?', 'products' ); ?></th>
+			<td>
+				<select name="ap_products_settings[products-html]">
+				<?php
+					$selected = $options['products-html'];
+					$help = __( 'If HTML is selected, you can copy and paste the HTML code for your button from PayPal or Google into the box on the products page.  If URL is selected, you can use the direct URL to the checkout page on either PayPal or Google.', 'products' );
+					foreach ( products_HTML_URI_option() as $option ) {
+						$label = $option['label'];
+						$value = $option['value'];
+						echo '<option value="'. $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+					} ?>
+				</select><br />
+				<label class="description" for="ap_products_settings[products-html]"><?php echo $help; ?></label>
+			</td>
+		</tr>
+	<?php }
 }
 
 /**
