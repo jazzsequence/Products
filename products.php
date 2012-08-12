@@ -300,6 +300,25 @@ function meta_cpt_product() {
 	<?php
 
     if ( $options['products-merchant'] ) {
+    	$form_html = array(
+    		'form' => array(
+    			'action' => array(),
+    			'id' => array(),
+    			'method' => array(),
+    			'name' => array(),
+    			'target' => array()
+    		),
+    		'input' => array(
+    			'name' => array(),
+    			'type' => array(),
+    			'value' => array(),
+    			'alt' => array(),
+    			'src' => array(),
+    			'border' => array(),
+    			'height' => array(),
+    			'width' => array()
+    		)
+    	);
     	switch( $options['products-merchant'] ) {
     		case 'cart66' :
     			echo '<p><label for="cart66_id"><strong>Cart66 Product ID</strong></label><br />';
@@ -307,24 +326,24 @@ function meta_cpt_product() {
 				echo '<em>Enter the Cart66 product ID number here.  You can get this from the <a href="admin.php?page=cart66-products">Cart66 Products</a> page.</em></p>';
 				break;
 			case 'paypal' :
-				echo '<p><label for="paypal_button_url"><strong>PayPal Button URL</strong></label><br />';
 				if ( $options['products-html'] == 'url' ) {
+					echo '<p><label for="paypal_button_url"><strong>PayPal Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="paypal_button_url" value="'.get_post_meta($post->ID, 'paypal_button_url', true).'" /><br />';
 					echo '<em>If using PayPal buttons, enter the URL for your Buy Now button.  You can get this by going to <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_merchant&nav=3" target="_blank">Merchant Services</a> -> Buy Now Buttons, create your button, then click to the Email tab.  You can also go to <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_button-management" target="_blank">My Saved Buttons</a> -> View Code (under Actions) to use a previously-generated button.  <span style="color: red;">Be sure to use the Email URL only, not the full button HTML code.</span></em></p>';
-				} elseif ( $options['products-html'] == 'html' ) {
-					echo 'textarea goes here</p>';
 				}
 				break;
 			case 'google' :
-				echo '<p><label for="google_button_url"><strong>Google Checkout Button URL</strong></label><br />';
 				if ( $options['products-html'] == 'url' ) {
+					echo '<p><label for="google_button_url"><strong>Google Checkout Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="google_button_url" value="'.get_post_meta($post->ID, 'google_button_url', true).'" /><br />';
 					echo '<em>If using Google Checkout, enter the URL for your Google Checkout button.  You can get this by going to <a href="https://checkout.google.com/sell/orders" target="_blank">My Sales</a> -> <a href="https://checkout.google.com/sell2/settings?tab=tools&pli=1" target="_blank">Tools</a> -> <a href="https://checkout.google.com/sell2/settings?section=BuyNowButton" target="_blank">Buy Now Buttons</a>, enter your information and click Create Button Code, then copy the destination URL of the generated button or open it in a new tab and copy the url of the Google Checkout page.  <span style="color: red;">Be sure to use the URL of the Google Checkout page, not the button HTML code.</em><br /><br />';
-				} elseif ( $options['products-html'] == 'html' ) {
-					echo 'textarea goes here</p>';
 				}
 			break;
     	}
+    	if ( $options['products-html'] == 'html' ) {
+			echo '<p><label for="button_html"><strong>Button HTML</strong></label><br />';
+			echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="google_button_html">' . wp_kses( get_post_meta($post->ID, 'button_html', true), $form_html ) . '</textarea>';
+		}
     }
     if ( $options['cross-sales'] ) {
 		echo '<label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
