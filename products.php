@@ -235,11 +235,11 @@ function products_HTML_URI_option() {
 function products_true_false() {
     $products_true_false = array(
         'true' => array(
-            'value' => 'true',
+            'value' => true,
             'label' => __('Yes', 'products')
         ),
         'false' => array(
-            'value' => 'false',
+            'value' => false,
             'label' => __('No', 'products')
         )
     );
@@ -325,16 +325,24 @@ function meta_cpt_product() {
 				}
 			break;
     	}
-    }
-
-
-	echo '<label for="cross_sales"><strong>Cross-sales link</strong></label><br />';
-	echo '<input style="width: 95%;" type="text" name="cross_sales" value="'.get_post_meta($post->ID, 'cross_sales', true).'" /><br />';
-	echo '<em>By default, the product page will display a short list of possibly related items based on the category and tags.  However, you can also use this field to feature a related item that you want to promote.  <span style="color: red;">Because the related items displayed are automatically generated, it\'s a good idea to leave this blank and check the product page first to see which products are suggested so you do not add a duplicate.</span></em><br /><br />';
-
-	echo '<label for="cross_sales_text"><strong>Cross-sales text</strong></label><br />';
-	echo '<input style="width: 95%;" type="text" name="cross_sales_text" value="'.get_post_meta($post->ID, 'cross_sales_meta', true).'" /><br />';
-	echo '<em>This is the anchor text you want to use for the cross-sales link above.  <span style="color: red;">This is required for the cross-sales link. Leaving this blank will mean your cross-sales link will not display.</span><br />';
+    } echo $options['cross-sales'];
+    if ( $options['cross-sales'] ) {
+		echo '<label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
+	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
+		?>
+		<select name="cross_sales" id="cross_sales">
+		  <?php
+		  $my_loop = new WP_Query( array( 'post_type' => 'ap_products', 'posts_per_page' => -1 ) );
+		  while ( $my_loop->have_posts() ) : $my_loop->the_post();
+		  	$title = get_the_title();
+		  	$permalink = get_permalink();
+		  	?>
+		  	<option value="<?php echo $permalink ?>" <?php selected( $cross_sales_selected, $permalink ); ?>><?php echo $title ?></option>
+		<?php endwhile; ?>
+	  	</select><br />
+	  	<?php wp_reset_postdata();
+		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
+	}
 
 }
 
@@ -401,7 +409,7 @@ function product_save_product_postdata($post_id, $post) {
 	/* Add values of $mydata as custom fields */
 	foreach ($mydata as $key => $value) {
 		if( $post->post_type == 'revision' ) return;
-		$value = implode(',', (array)$value);
+		//$value = implode(',', (array)$value);
 		if(get_post_meta($post->ID, $key, FALSE)) {
 			update_post_meta($post->ID, $key, $value);
 		} else {
