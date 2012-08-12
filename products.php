@@ -325,7 +325,7 @@ function meta_cpt_product() {
 				}
 			break;
     	}
-    } echo $options['cross-sales'];
+    }
     if ( $options['cross-sales'] ) {
 		echo '<label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
 	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
