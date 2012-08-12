@@ -4,7 +4,7 @@ Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id
 Tags: e-commerce, custom post types, products  
 Requires at least: 2.9  
 Tested up to: 3.4.1  
-Stable tag: 0.3
+Stable tag: 0.3.1
 
 A simple shop plugin based on custom post types with integrated support for Cart66
 
@@ -24,11 +24,25 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ## Changelog
 
+### 0.3.1
+
+* implemented merchant options on add product page
+* added display option on options page for HTML/URL buttons for Google/PayPal
+* added new option for hTML embed code or URL to checkout page
+
 ### 0.3
 
 * added settings page menu item
 * fixed menu icon issue
 * added readme.md
+* pulled out notes and added phpdoc-style comments
+* added options page
+* added `option-setup.php` -- this is where the markup for all the options will live
+* added global definition for plugin dir
+* added `option-setup.php call
+* added settings call and runs the `_do_options` function to load the options from `option-setup.php`
+* added merchant options array
+* added merchant options setting
 
 ### 0.2
 
