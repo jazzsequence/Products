@@ -227,6 +227,26 @@ function products_HTML_URI_option() {
 }
 
 /**
+ * True/False option
+ * @since museum-core/1.0.2
+ * @author Chris Reynolds
+ * generic yes/no function used for true/false options
+ */
+function products_true_false() {
+    $products_true_false = array(
+        'true' => array(
+            'value' => 'true',
+            'label' => __('Yes', 'products')
+        ),
+        'false' => array(
+            'value' => 'false',
+            'label' => __('No', 'products')
+        )
+    );
+    return $products_true_false;
+}
+
+/**
  * Custom meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
