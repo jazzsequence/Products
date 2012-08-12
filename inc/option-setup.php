@@ -15,7 +15,7 @@ function products_merchant_option_display() {
 	?>
 	<tr valign="top"><th scope="row"><?php _e( 'Merchant', 'products' ); ?></th>
 		<td>
-			<select name="ap_products_settings[products-merchant]">
+			<select name="ap_products_settings[products-merchant]" id="merchant">
 			<?php
 				$selected = $options['products-merchant'];
 				foreach ( products_merchant_options() as $option ) {
@@ -24,7 +24,54 @@ function products_merchant_option_display() {
 					echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
 				} ?>
 			</select><br />
-			<label class="description" for="ap_products_settings[products-merchant]"><?php _e( 'Select which merchant you will be using for your purchases.', 'products' ); ?>
+			<label class="description" for="ap_products_settings[products-merchant]"><?php _e( 'Select which merchant you will be using for your purchases.', 'products' ); ?></label>
+		</td>
+	</tr>
+
+	<?php
+}
+
+/**
+ * Embedded HTML or url option for Google/PayPal
+ * displays an option to use full HTML embed or just a url if Google or PayPal are selected
+ * @author Chris Reynolds
+ * @since 0.3.1
+ * @uses products_HTML_URI_option
+ * @uses products_merchant_option_display
+ * @link http://jsfiddle.net/wwTxw/
+ */
+function products_HTML_URI_option_display() {
+	// TODO add a defaults array
+	$defaults = '';
+	$options = get_option( 'ap_products_settings', $defaults );
+
+	ob_start();
+	?>
+	<script type="text/javascript">
+		jQuery(function() {
+			jQuery('#merchant').change(function(){
+				if (jQuery(this).val() == "cart66") {
+					jQuery('#html_uri').hide();
+				} else {
+					jQuery('#html_uri').show();
+				}
+			});
+		});
+	</script>
+	<tr valign="top" id="html_uri"><th scope="row"><?php _e( 'Use HTML code or URL?', 'products' ); ?></th>
+		<td>
+			<select name="ap_products_settings[products-html]">
+			<?php
+				$selected = $options['products-html'];
+				$help = __( 'If HTML is selected, you can copy and paste the HTML code for your button from PayPal or Google into the box on the products page.  If URL is selected, you can use the direct URL to the checkout page on either PayPal or Google.', 'products' );
+				foreach ( products_HTML_URI_option() as $option ) {
+					$label = $option['label'];
+					$value = $option['value'];
+					echo '<option value="'. $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+				} ?>
+			</select><br />
+			<label class="description" for="ap_products_settings[products-html]"><?php echo $help; ?></label>
+			</select>
 		</td>
 	</tr>
 
@@ -43,6 +90,7 @@ function ap_products_do_options() {
 
 	echo $options_before;
 	products_merchant_option_display();
+	products_HTML_URI_option_display();
 	// do stuff
 	echo $options_after;
 }
