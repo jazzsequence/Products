@@ -3,7 +3,7 @@
 Plugin Name: Products
 Plugin URI: http://arcanepalette.com
 Description: A simple shop plugin based on custom post types with integrated support for Cart66
-Version: 0.3
+Version: 0.3.1
 Author: Arcane Palette Creative Design
 Author URI: http://arcanepalette.com/
 License: GPL3
@@ -203,6 +203,27 @@ function products_merchant_options() {
 		)
 	);
 	return $products_merchant;
+}
+
+/**
+ * Embed vs. URL options
+ * option to use HTML code or URL for PayPal or Google
+ * @author Chris Reynolds
+ * @since 0.3.1
+ */
+function products_HTML_URI_option() {
+	$products_html = array(
+		'html' => array(
+			'value' => 'html',
+			'label' => __( 'HTML', 'products' ),
+			'help' => __( 'some help text goes here', 'products' )
+		),
+		'url' => array(
+			'value' => 'url',
+			'label' => __( 'URL', 'products' ),
+		)
+	);
+	return $products_html;
 }
 
 /**
