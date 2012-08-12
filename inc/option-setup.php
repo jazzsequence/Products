@@ -71,10 +71,41 @@ function products_HTML_URI_option_display() {
 				} ?>
 			</select><br />
 			<label class="description" for="ap_products_settings[products-html]"><?php echo $help; ?></label>
-			</select>
 		</td>
 	</tr>
 
+	<?php
+}
+
+/**
+ * Display Cross-sales?
+ * option to define an item to display as a cross-sale for a specific product
+ * @author Chris Reynolds
+ * @since 0.3.1
+ * @uses products_true_false
+ */
+function products_cross_sales_option_display() {
+	// TODO add a defaults array
+	$defaults = '';
+	$options = get_option( 'ap_products_settings', $defaults );
+
+	ob_start();
+	?>
+	<tr valign="top"><th scope="row"><?php _e( 'Use Cross-sales?', 'products' ); ?></th>
+		<td>
+			<select name="ap_products_settings[cross-sales]">
+			<?php
+				$selected = $options['cross-sales'];
+				$help = __( 'Use this field to display an option for cross-sales link on the add/edit product page to feature a related item that you want to promote on that product page.', 'products' );
+				foreach ( products_true_false() as $option ) {
+					$label = $option['label'];
+					$value = $option['value'];
+					echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+				} ?>
+			</select><br />
+			<label class="description" for="ap_products_settings[cross-sales]"><?php echo $help; ?></label>
+		</td>
+	</tr>
 	<?php
 }
 
@@ -91,6 +122,7 @@ function ap_products_do_options() {
 	echo $options_before;
 	products_merchant_option_display();
 	products_HTML_URI_option_display();
+	products_cross_sales_option_display();
 	// do stuff
 	echo $options_after;
 }
