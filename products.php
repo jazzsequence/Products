@@ -277,28 +277,6 @@ function meta_cpt_product() {
 	echo '<input type="hidden" name="product_noncename" id="product_noncename" value="' .
 	wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
 
-   	echo '<label for="add_to_cart"><strong>Add to Cart Button</strong></label><br />';
-
-	//ajax upload
-	$wud = wp_upload_dir();
-	// TODO replace this business with wordpress media uploader
-?>
-
-		<script type="text/javascript">
-		jQuery(document).ready(function($) {
-			var uploader = new qq.FileUploader({
-				element: document.getElementById('add_to_cart_upload'),
-				action: '<?php echo get_bloginfo('siteurl'); ?>/',
-				onComplete: function (id,fileName,responseJSON) {
-					if(responseJSON.success == true)
-						jQuery('#add_to_cart').val('<?php echo $wud["url"]; ?>/'+fileName);
-				}
-			});
-		});
-		</script>
-	<input style="width: 95%;" id="add_to_cart" name="add_to_cart" value="<?php echo get_post_meta($post->ID, 'add_to_cart', true); ?>" type="text" /><div id="add_to_cart_upload"></div><em>Upload a custom Add to Cart button.  If left blank, a default Add to Cart button will be used.</em><br /><br />
-	<?php
-
     if ( $options['products-merchant'] ) {
     	$form_html = array(
     		'form' => array(
@@ -375,7 +353,7 @@ function products_load_admin_scripts() {
 	wp_enqueue_script('media-upload');
 	wp_enqueue_script('thickbox');
 	wp_enqueue_style('thickbox');
-	wp_enqueue_script('products_uploader', product_plugin_dir . 'js/uploader.js', array( 'jquery', 'media-upload', 'thickbox' ) );
+	wp_enqueue_script('products_uploader', product_plugin_path . 'js/uploader.js', array( 'jquery', 'media-upload', 'thickbox' ) );
 }
 
 /**
