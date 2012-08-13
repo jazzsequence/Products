@@ -10,8 +10,6 @@ function products_merchant_option_display() {
 	// TODO add a defaults array
 	$defaults = '';
 	$options = get_option( 'ap_products_settings', $defaults );
-
-	ob_start();
 	?>
 	<tr valign="top"><th scope="row"><?php _e( 'Merchant', 'products' ); ?></th>
 		<td>
@@ -27,7 +25,6 @@ function products_merchant_option_display() {
 			<label class="description" for="ap_products_settings[products-merchant]"><?php _e( 'Select which merchant you will be using for your purchases.', 'products' ); ?></label>
 		</td>
 	</tr>
-
 	<?php
 }
 
@@ -44,8 +41,6 @@ function products_HTML_URI_option_display() {
 	// TODO add a defaults array
 	$defaults = '';
 	$options = get_option( 'ap_products_settings', $defaults );
-
-	ob_start();
 	?>
 	<script type="text/javascript">
 		jQuery(function() {
@@ -88,8 +83,6 @@ function products_cross_sales_option_display() {
 	// TODO add a defaults array
 	$defaults = '';
 	$options = get_option( 'ap_products_settings', $defaults );
-
-	ob_start();
 	?>
 	<tr valign="top"><th scope="row"><?php _e( 'Use Cross-sales?', 'products' ); ?></th>
 		<td>
@@ -110,6 +103,47 @@ function products_cross_sales_option_display() {
 }
 
 /**
+ * Add to Cart Button
+ * @since 0.3.1
+ * @author Chris Reynolds
+ * @uses get_option
+ * @uses thickbox
+ * @uses media-upload
+ */
+function products_add_to_cart_button_display() {
+	// TODO add a defauls array
+	$defaults = '';
+	$options = get_option( 'ap_products_settings', $defaults );
+	if ( !isset($options['add-to-cart']) || $options['add-to-cart'] == '' ) {
+		if ( $options['products-merchant'] == 'paypal' ) {
+			$add_to_cart = 'https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif';
+		}
+		if ( $options['products-merchant'] == 'google' ) {
+			$add_to_cart = 'https://checkout.google.com/buttons/buy.gif?w=117&h=48&style=white&variant=text&loc=en_US';
+		}
+		if ( $options['products-merchant'] == 'cart66' ) {
+			$add_to_cart = home_url() . '/wp-content/plugins/cart66/images/add-to-cart.png';
+		}
+	}
+	$help = __( 'Use the uploader to upload a PNG, JPG, or GIF file to use as an add to cart button.  If no image is specified, the default will be used.', 'products' )
+	?>
+		<tr valign="top"><th scope="row"><?php _e( 'Add to Cart button', 'products' ); ?></th>
+			<td>
+				<input id="upload_image" type="text" size="36" name="ap_products_settings[add-to-cart]" value="<?php esc_attr_e( $options['add-to-cart'] ); ?>" />
+				<input id="upload_image_button" type="button" class="button" value="<?php _e('Upload Image','products'); ?>" />
+				<br />
+				<label class="description" for="ap_products_settings[favicon]"><?php echo $help; ?></label><br />
+				<?php
+				if ( isset($options['add-to-cart']) && $options['add-to-cart'] != '' )
+					$add_to_cart = $options['add-to-cart'];
+				?>
+				<img src="<?php echo $add_to_cart; ?>" alt="current button image" />
+			</td>
+		</tr>
+	<?php
+}
+
+/**
  * Do Product option stuff
  * @author Chris Reynolds
  * @since 0.3
@@ -123,7 +157,7 @@ function ap_products_do_options() {
 	products_merchant_option_display();
 	products_HTML_URI_option_display();
 	products_cross_sales_option_display();
-	// do stuff
+	products_add_to_cart_button_display();
 	echo $options_after;
 }
 ?>
