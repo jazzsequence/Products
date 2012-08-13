@@ -139,7 +139,7 @@ add_action( 'admin_init', 'ap_products_settings_init' );
 function ap_products_add_page() {
     $page = add_submenu_page('edit.php?post_type=ap_products','Products Options', 'Options', 'administrator', 'ap_products_settings', 'ap_products_settings_page' );
     //add_action( 'admin_print_scripts-plugins.php', 'espresso_requirements_scripts' );
-    //add_action( 'admin_print_scripts-' . $page, 'espresso_requirements_scripts' );
+    add_action( 'admin_print_scripts-' . $page, 'products_load_admin_scripts' );
 }
 add_action( 'admin_menu', 'ap_products_add_page' );
 
@@ -365,47 +365,32 @@ function meta_cpt_product() {
 
 }
 
-/* deal with uploading image */
-// TODO replace this business with the WordPress media uploader
-if(isset ($_GET["qqfile"]) && strlen($_GET["qqfile"]))
-{
-	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
-	include(WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/' . 'includes/upload.php');
-	$wud = wp_upload_dir();
-
-	/* list of valid extensions */
-	$allowedExtensions = array('jpg', 'jpeg', 'gif', 'png', 'ico');
-
-	/* max file size in bytes */
-	$sizeLimit = 6 * 1024 * 1024;
-
-	$uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
-	$result = $uploader->handleUpload($wud['path'].'/',true);
-
-	echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
-	exit;
-}
-
-
-function product_uploader_scripts() {
-// TODO replace this business with the WordPress media uploader
-	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
-
-	wp_enqueue_script('fileuploader', $pluginurl.'/includes/fileuploader.js',array('jquery'));
-	wp_enqueue_style('fileuploadercss',$pluginurl.'/css/fileuploader.css');
-}
-
-function product_uploader_styles() {
-	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
-
+/**
+ * Load admin scripts
+ * @author Chris Reynolds
+ * @since 0.3.1
+ * loads uploader scripts for the Options page
+ */
+function products_load_admin_scripts() {
+	wp_enqueue_script('media-upload');
+	wp_enqueue_script('thickbox');
 	wp_enqueue_style('thickbox');
-	wp_enqueue_style('fileuploadercss', $pluginurl.'/css/fileuploader.css');
+	wp_enqueue_script('products_uploader', product_plugin_dir . 'js/uploader.js', array( 'jquery', 'media-upload', 'thickbox' ) );
 }
 
-add_action('admin_print_scripts', 'product_uploader_scripts');
-add_action('admin_print_styles', 'product_uploader_styles');
-
-/* When the post is saved, saves our product data */
+/**
+ * Save product postdata
+ * deal with saving the post and meta
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses wp_verify_nonce
+ * @uses plugin_basename
+ * @uses current_user_can
+ * @uses save_post
+ * @uses update_post_meta
+ * @uses add_post_meta
+ * @uses delete_post_meta
+ */
 function product_save_product_postdata($post_id, $post) {
    	if ( !wp_verify_nonce( $_POST['product_noncename'], plugin_basename(__FILE__) )) {
 	return $post->ID;
@@ -440,8 +425,17 @@ function product_save_product_postdata($post_id, $post) {
 
 add_action('save_post', 'product_save_product_postdata', 1, 2); // save the custom fields
 
-add_action( 'admin_head', 'product_icon' );
-function product_icon() {
+/**
+ * Product icons
+ * deals with the custom icons for the product pages
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses admin_head
+ * price-tag icon by Yusuke Kamiyamane from the Fugue icon set
+ * released under a CC 3.0 Attribution Unported License http://creativecommons.org/licenses/by/3.0/
+ * @link http://p.yusukekamiyamane.com/
+ */
+function product_icons() {
     ?>
     <style type="text/css" media="screen">
         #menu-posts-ap_products .wp-menu-image {
@@ -450,25 +444,13 @@ function product_icon() {
 		#menu-posts-ap_products:hover .wp-menu-image, #menu-posts-ap_products.wp-has-current-submenu .wp-menu-image {
 			background: url(<?php echo product_plugin_images; ?>price-tag.png) no-repeat 6px 7px !important;
         }
+	<?php if (($_GET['post_type'] == 'ap_products') || ($post_type == 'ap_products')) : ?>
+		#icon-edit { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
+	<?php endif; ?>
     </style>
 <?php
-	}
-
-add_action('admin_head', 'product_header');
-function product_header() {
-        global $post_type;
-	?>
-	<style>
-	<?php if (($_GET['post_type'] == 'ap_products') || ($post_type == 'ap_products')) : ?>
-	#icon-edit { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
-	<?php endif; ?>
-        </style>
-    <?php }
-
-		/* price-tag icon by Yusuke Kamiyamane from the Fugue icon set
-		released under a CC 3.0 Attribution Unported License http://creativecommons.org/licenses/by/3.0/
-		http://p.yusukekamiyamane.com/
-		*/
+}
+add_action( 'admin_head', 'product_icons' );
 
 /* move template files on activation */
 /* commenting this out until we're ready to move the files
@@ -494,4 +476,55 @@ function products_activation()
 	}
 }
 */
+// Start of Presstrends Magic
+function presstrends_plugin() {
+
+// PressTrends Account API Key
+$api_key = 'i93727o4eba1lujhti5bjgiwfmln5xm5o0iv';
+$auth = 'wcc72j1n6tao34jp4zhby0y6zrycf3jlz';
+
+// Start of Metrics
+global $wpdb;
+$data = get_transient( 'presstrends_data' );
+if (!$data || $data == ''){
+$api_base = 'http://api.presstrends.io/index.php/api/pluginsites/update/auth/';
+$url = $api_base . $auth . '/api/' . $api_key . '/';
+$data = array();
+$count_posts = wp_count_posts();
+$count_pages = wp_count_posts('page');
+$comments_count = wp_count_comments();
+$theme_data = get_theme_data(get_stylesheet_directory() . '/style.css');
+$plugin_count = count(get_option('active_plugins'));
+$all_plugins = get_plugins();
+$plugin_name = '&';
+foreach($all_plugins as $plugin_file => $plugin_info){
+$plugin_name .= $plugin_info['Name'];
+$plugin_name .= '&';}
+$plugin_data = get_plugin_data( __FILE__ );
+$plugin_version = $plugin_data['Version'];
+$posts_with_comments = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}posts WHERE post_type='post' AND comment_count > 0");
+$comments_to_posts = number_format(($posts_with_comments / $count_posts->publish) * 100, 0, '.', '');
+$pingback_result = $wpdb->get_var('SELECT COUNT(comment_ID) FROM '.$wpdb->comments.' WHERE comment_type = "pingback"');
+$data['url'] = stripslashes(str_replace(array('http://', '/', ':' ), '', site_url()));
+$data['posts'] = $count_posts->publish;
+$data['pages'] = $count_pages->publish;
+$data['comments'] = $comments_count->total_comments;
+$data['approved'] = $comments_count->approved;
+$data['spam'] = $comments_count->spam;
+$data['pingbacks'] = $pingback_result;
+$data['post_conversion'] = $comments_to_posts;
+$data['theme_version'] = $plugin_version;
+$data['theme_name'] = urlencode($theme_data['Name']);
+$data['site_name'] = str_replace( ' ', '', get_bloginfo( 'name' ));
+$data['plugins'] = $plugin_count;
+$data['plugin'] = urlencode($plugin_name);
+$data['wpversion'] = get_bloginfo('version');
+foreach ( $data as $k => $v ) {
+$url .= $k . '/' . $v . '/';}
+$response = wp_remote_get( $url );
+set_transient('presstrends_data', $data, 60*60*24);}
+}
+
+// PressTrends WordPress Action
+add_action('admin_init', 'presstrends_plugin');
 ?>
