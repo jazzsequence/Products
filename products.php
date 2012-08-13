@@ -139,7 +139,7 @@ add_action( 'admin_init', 'ap_products_settings_init' );
 function ap_products_add_page() {
     $page = add_submenu_page('edit.php?post_type=ap_products','Products Options', 'Options', 'administrator', 'ap_products_settings', 'ap_products_settings_page' );
     //add_action( 'admin_print_scripts-plugins.php', 'espresso_requirements_scripts' );
-    //add_action( 'admin_print_scripts-' . $page, 'espresso_requirements_scripts' );
+    add_action( 'admin_print_scripts-' . $page, 'products_load_admin_scripts' );
 }
 add_action( 'admin_menu', 'ap_products_add_page' );
 
@@ -227,6 +227,42 @@ function products_HTML_URI_option() {
 }
 
 /**
+ * True/False option
+ * @since museum-core/1.0.2
+ * @author Chris Reynolds
+ * generic yes/no function used for true/false options
+ */
+function products_true_false() {
+    $products_true_false = array(
+        'true' => array(
+            'value' => true,
+            'label' => __('Yes', 'products')
+        ),
+        'false' => array(
+            'value' => false,
+            'label' => __('No', 'products')
+        )
+    );
+    return $products_true_false;
+}
+
+/**
+ * Default options
+ * an array of defaults
+ * @author Chris Reynolds
+ * @since 0.3.1
+ */
+function products_get_defaults() {
+	$products_defaults = array(
+		'products-merchant' => 'paypal',
+		'products-html' => 'html',
+		'cross-sales' => false,
+		'add-to-cart' => null
+	);
+	return $products_defaults;
+}
+
+/**
  * Custom meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
@@ -257,29 +293,26 @@ function meta_cpt_product() {
 	echo '<input type="hidden" name="product_noncename" id="product_noncename" value="' .
 	wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
 
-   	echo '<label for="add_to_cart"><strong>Add to Cart Button</strong></label><br />';
-
-	//ajax upload
-	$wud = wp_upload_dir();
-	// TODO replace this business with wordpress media uploader
-?>
-
-		<script type="text/javascript">
-		jQuery(document).ready(function($) {
-			var uploader = new qq.FileUploader({
-				element: document.getElementById('add_to_cart_upload'),
-				action: '<?php echo get_bloginfo('siteurl'); ?>/',
-				onComplete: function (id,fileName,responseJSON) {
-					if(responseJSON.success == true)
-						jQuery('#add_to_cart').val('<?php echo $wud["url"]; ?>/'+fileName);
-				}
-			});
-		});
-		</script>
-	<input style="width: 95%;" id="add_to_cart" name="add_to_cart" value="<?php echo get_post_meta($post->ID, 'add_to_cart', true); ?>" type="text" /><div id="add_to_cart_upload"></div><em>Upload a custom Add to Cart button.  If left blank, a default Add to Cart button will be used.</em><br /><br />
-	<?php
-
     if ( $options['products-merchant'] ) {
+    	$form_html = array(
+    		'form' => array(
+    			'action' => array(),
+    			'id' => array(),
+    			'method' => array(),
+    			'name' => array(),
+    			'target' => array()
+    		),
+    		'input' => array(
+    			'name' => array(),
+    			'type' => array(),
+    			'value' => array(),
+    			'alt' => array(),
+    			'src' => array(),
+    			'border' => array(),
+    			'height' => array(),
+    			'width' => array()
+    		)
+    	);
     	switch( $options['products-merchant'] ) {
     		case 'cart66' :
     			echo '<p><label for="cart66_id"><strong>Cart66 Product ID</strong></label><br />';
@@ -287,78 +320,71 @@ function meta_cpt_product() {
 				echo '<em>Enter the Cart66 product ID number here.  You can get this from the <a href="admin.php?page=cart66-products">Cart66 Products</a> page.</em></p>';
 				break;
 			case 'paypal' :
-				echo '<p><label for="paypal_button_url"><strong>PayPal Button URL</strong></label><br />';
 				if ( $options['products-html'] == 'url' ) {
+					echo '<p><label for="paypal_button_url"><strong>PayPal Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="paypal_button_url" value="'.get_post_meta($post->ID, 'paypal_button_url', true).'" /><br />';
 					echo '<em>If using PayPal buttons, enter the URL for your Buy Now button.  You can get this by going to <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_merchant&nav=3" target="_blank">Merchant Services</a> -> Buy Now Buttons, create your button, then click to the Email tab.  You can also go to <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_button-management" target="_blank">My Saved Buttons</a> -> View Code (under Actions) to use a previously-generated button.  <span style="color: red;">Be sure to use the Email URL only, not the full button HTML code.</span></em></p>';
-				} elseif ( $options['products-html'] == 'html' ) {
-					echo 'textarea goes here</p>';
 				}
 				break;
 			case 'google' :
-				echo '<p><label for="google_button_url"><strong>Google Checkout Button URL</strong></label><br />';
 				if ( $options['products-html'] == 'url' ) {
+					echo '<p><label for="google_button_url"><strong>Google Checkout Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="google_button_url" value="'.get_post_meta($post->ID, 'google_button_url', true).'" /><br />';
 					echo '<em>If using Google Checkout, enter the URL for your Google Checkout button.  You can get this by going to <a href="https://checkout.google.com/sell/orders" target="_blank">My Sales</a> -> <a href="https://checkout.google.com/sell2/settings?tab=tools&pli=1" target="_blank">Tools</a> -> <a href="https://checkout.google.com/sell2/settings?section=BuyNowButton" target="_blank">Buy Now Buttons</a>, enter your information and click Create Button Code, then copy the destination URL of the generated button or open it in a new tab and copy the url of the Google Checkout page.  <span style="color: red;">Be sure to use the URL of the Google Checkout page, not the button HTML code.</em><br /><br />';
-				} elseif ( $options['products-html'] == 'html' ) {
-					echo 'textarea goes here</p>';
 				}
 			break;
     	}
+    	if ( $options['products-html'] == 'html' ) {
+			echo '<p><label for="button_html"><strong>Button HTML</strong></label><br />';
+			echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="google_button_html">' . wp_kses( get_post_meta($post->ID, 'button_html', true), $form_html ) . '</textarea>';
+		}
     }
-
-
-	echo '<label for="cross_sales"><strong>Cross-sales link</strong></label><br />';
-	echo '<input style="width: 95%;" type="text" name="cross_sales" value="'.get_post_meta($post->ID, 'cross_sales', true).'" /><br />';
-	echo '<em>By default, the product page will display a short list of possibly related items based on the category and tags.  However, you can also use this field to feature a related item that you want to promote.  <span style="color: red;">Because the related items displayed are automatically generated, it\'s a good idea to leave this blank and check the product page first to see which products are suggested so you do not add a duplicate.</span></em><br /><br />';
-
-	echo '<label for="cross_sales_text"><strong>Cross-sales text</strong></label><br />';
-	echo '<input style="width: 95%;" type="text" name="cross_sales_text" value="'.get_post_meta($post->ID, 'cross_sales_meta', true).'" /><br />';
-	echo '<em>This is the anchor text you want to use for the cross-sales link above.  <span style="color: red;">This is required for the cross-sales link. Leaving this blank will mean your cross-sales link will not display.</span><br />';
+    if ( $options['cross-sales'] ) {
+		echo '<label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
+	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
+		?>
+		<select name="cross_sales" id="cross_sales">
+		  <?php
+		  $my_loop = new WP_Query( array( 'post_type' => 'ap_products', 'posts_per_page' => -1 ) );
+		  while ( $my_loop->have_posts() ) : $my_loop->the_post();
+		  	$title = get_the_title();
+		  	$permalink = get_permalink();
+		  	?>
+		  	<option value="<?php echo $permalink ?>" <?php selected( $cross_sales_selected, $permalink ); ?>><?php echo $title ?></option>
+		<?php endwhile; ?>
+	  	</select><br />
+	  	<?php wp_reset_postdata();
+		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
+	}
 
 }
 
-/* deal with uploading image */
-// TODO replace this business with the WordPress media uploader
-if(isset ($_GET["qqfile"]) && strlen($_GET["qqfile"]))
-{
-	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
-	include(WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)) . '/' . 'includes/upload.php');
-	$wud = wp_upload_dir();
-
-	/* list of valid extensions */
-	$allowedExtensions = array('jpg', 'jpeg', 'gif', 'png', 'ico');
-
-	/* max file size in bytes */
-	$sizeLimit = 6 * 1024 * 1024;
-
-	$uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
-	$result = $uploader->handleUpload($wud['path'].'/',true);
-
-	echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
-	exit;
-}
-
-
-function product_uploader_scripts() {
-// TODO replace this business with the WordPress media uploader
-	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
-
-	wp_enqueue_script('fileuploader', $pluginurl.'/includes/fileuploader.js',array('jquery'));
-	wp_enqueue_style('fileuploadercss',$pluginurl.'/css/fileuploader.css');
-}
-
-function product_uploader_styles() {
-	$pluginurl = WP_PLUGIN_URL . '/' . plugin_basename(dirname(__FILE__));
-
+/**
+ * Load admin scripts
+ * @author Chris Reynolds
+ * @since 0.3.1
+ * loads uploader scripts for the Options page
+ */
+function products_load_admin_scripts() {
+	wp_enqueue_script('media-upload');
+	wp_enqueue_script('thickbox');
 	wp_enqueue_style('thickbox');
-	wp_enqueue_style('fileuploadercss', $pluginurl.'/css/fileuploader.css');
+	wp_enqueue_script('products_uploader', product_plugin_path . 'js/uploader.js', array( 'jquery', 'media-upload', 'thickbox' ) );
 }
 
-add_action('admin_print_scripts', 'product_uploader_scripts');
-add_action('admin_print_styles', 'product_uploader_styles');
-
-/* When the post is saved, saves our product data */
+/**
+ * Save product postdata
+ * deal with saving the post and meta
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses wp_verify_nonce
+ * @uses plugin_basename
+ * @uses current_user_can
+ * @uses save_post
+ * @uses update_post_meta
+ * @uses add_post_meta
+ * @uses delete_post_meta
+ */
 function product_save_product_postdata($post_id, $post) {
    	if ( !wp_verify_nonce( $_POST['product_noncename'], plugin_basename(__FILE__) )) {
 	return $post->ID;
@@ -381,7 +407,7 @@ function product_save_product_postdata($post_id, $post) {
 	/* Add values of $mydata as custom fields */
 	foreach ($mydata as $key => $value) {
 		if( $post->post_type == 'revision' ) return;
-		$value = implode(',', (array)$value);
+		//$value = implode(',', (array)$value);
 		if(get_post_meta($post->ID, $key, FALSE)) {
 			update_post_meta($post->ID, $key, $value);
 		} else {
@@ -393,8 +419,17 @@ function product_save_product_postdata($post_id, $post) {
 
 add_action('save_post', 'product_save_product_postdata', 1, 2); // save the custom fields
 
-add_action( 'admin_head', 'product_icon' );
-function product_icon() {
+/**
+ * Product icons
+ * deals with the custom icons for the product pages
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses admin_head
+ * price-tag icon by Yusuke Kamiyamane from the Fugue icon set
+ * released under a CC 3.0 Attribution Unported License http://creativecommons.org/licenses/by/3.0/
+ * @link http://p.yusukekamiyamane.com/
+ */
+function product_icons() {
     ?>
     <style type="text/css" media="screen">
         #menu-posts-ap_products .wp-menu-image {
@@ -403,25 +438,13 @@ function product_icon() {
 		#menu-posts-ap_products:hover .wp-menu-image, #menu-posts-ap_products.wp-has-current-submenu .wp-menu-image {
 			background: url(<?php echo product_plugin_images; ?>price-tag.png) no-repeat 6px 7px !important;
         }
+	<?php if (($_GET['post_type'] == 'ap_products') || ($post_type == 'ap_products')) : ?>
+		#icon-edit { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
+	<?php endif; ?>
     </style>
 <?php
-	}
-
-add_action('admin_head', 'product_header');
-function product_header() {
-        global $post_type;
-	?>
-	<style>
-	<?php if (($_GET['post_type'] == 'ap_products') || ($post_type == 'ap_products')) : ?>
-	#icon-edit { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
-	<?php endif; ?>
-        </style>
-    <?php }
-
-		/* price-tag icon by Yusuke Kamiyamane from the Fugue icon set
-		released under a CC 3.0 Attribution Unported License http://creativecommons.org/licenses/by/3.0/
-		http://p.yusukekamiyamane.com/
-		*/
+}
+add_action( 'admin_head', 'product_icons' );
 
 /* move template files on activation */
 /* commenting this out until we're ready to move the files
@@ -447,4 +470,55 @@ function products_activation()
 	}
 }
 */
+// Start of Presstrends Magic
+function presstrends_plugin() {
+
+// PressTrends Account API Key
+$api_key = 'i93727o4eba1lujhti5bjgiwfmln5xm5o0iv';
+$auth = 'wcc72j1n6tao34jp4zhby0y6zrycf3jlz';
+
+// Start of Metrics
+global $wpdb;
+$data = get_transient( 'presstrends_data' );
+if (!$data || $data == ''){
+$api_base = 'http://api.presstrends.io/index.php/api/pluginsites/update/auth/';
+$url = $api_base . $auth . '/api/' . $api_key . '/';
+$data = array();
+$count_posts = wp_count_posts();
+$count_pages = wp_count_posts('page');
+$comments_count = wp_count_comments();
+$theme_data = get_theme_data(get_stylesheet_directory() . '/style.css');
+$plugin_count = count(get_option('active_plugins'));
+$all_plugins = get_plugins();
+$plugin_name = '&';
+foreach($all_plugins as $plugin_file => $plugin_info){
+$plugin_name .= $plugin_info['Name'];
+$plugin_name .= '&';}
+$plugin_data = get_plugin_data( __FILE__ );
+$plugin_version = $plugin_data['Version'];
+$posts_with_comments = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}posts WHERE post_type='post' AND comment_count > 0");
+$comments_to_posts = number_format(($posts_with_comments / $count_posts->publish) * 100, 0, '.', '');
+$pingback_result = $wpdb->get_var('SELECT COUNT(comment_ID) FROM '.$wpdb->comments.' WHERE comment_type = "pingback"');
+$data['url'] = stripslashes(str_replace(array('http://', '/', ':' ), '', site_url()));
+$data['posts'] = $count_posts->publish;
+$data['pages'] = $count_pages->publish;
+$data['comments'] = $comments_count->total_comments;
+$data['approved'] = $comments_count->approved;
+$data['spam'] = $comments_count->spam;
+$data['pingbacks'] = $pingback_result;
+$data['post_conversion'] = $comments_to_posts;
+$data['theme_version'] = $plugin_version;
+$data['theme_name'] = urlencode($theme_data['Name']);
+$data['site_name'] = str_replace( ' ', '', get_bloginfo( 'name' ));
+$data['plugins'] = $plugin_count;
+$data['plugin'] = urlencode($plugin_name);
+$data['wpversion'] = get_bloginfo('version');
+foreach ( $data as $k => $v ) {
+$url .= $k . '/' . $v . '/';}
+$response = wp_remote_get( $url );
+set_transient('presstrends_data', $data, 60*60*24);}
+}
+
+// PressTrends WordPress Action
+add_action('admin_init', 'presstrends_plugin');
 ?>
