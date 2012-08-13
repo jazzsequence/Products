@@ -5,10 +5,10 @@
  * @author Chris Reynolds
  * @since 0.3
  * @uses products_merchant_options
+ * @uses products_get_defaults
  */
 function products_merchant_option_display() {
-	// TODO add a defaults array
-	$defaults = '';
+	$defaults = products_get_defaults();
 	$options = get_option( 'ap_products_settings', $defaults );
 	?>
 	<tr valign="top"><th scope="row"><?php _e( 'Merchant', 'products' ); ?></th>
@@ -35,11 +35,11 @@ function products_merchant_option_display() {
  * @since 0.3.1
  * @uses products_HTML_URI_option
  * @uses products_merchant_option_display
+ * @uses products_get_defaults
  * @link http://jsfiddle.net/wwTxw/
  */
 function products_HTML_URI_option_display() {
-	// TODO add a defaults array
-	$defaults = '';
+	$defaults = products_get_defaults();
 	$options = get_option( 'ap_products_settings', $defaults );
 	?>
 	<script type="text/javascript">
@@ -78,10 +78,10 @@ function products_HTML_URI_option_display() {
  * @author Chris Reynolds
  * @since 0.3.1
  * @uses products_true_false
+ * @uses products_get_defaults
  */
 function products_cross_sales_option_display() {
-	// TODO add a defaults array
-	$defaults = '';
+	$defaults = products_get_defaults();
 	$options = get_option( 'ap_products_settings', $defaults );
 	?>
 	<tr valign="top"><th scope="row"><?php _e( 'Use Cross-sales?', 'products' ); ?></th>
@@ -109,10 +109,10 @@ function products_cross_sales_option_display() {
  * @uses get_option
  * @uses thickbox
  * @uses media-upload
+ * @uses products_get_defaults
  */
 function products_add_to_cart_button_display() {
-	// TODO add a defauls array
-	$defaults = '';
+	$defaults = products_get_defaults();
 	$options = get_option( 'ap_products_settings', $defaults );
 	if ( !isset($options['add-to-cart']) || $options['add-to-cart'] == '' ) {
 		if ( $options['products-merchant'] == 'paypal' ) {

@@ -247,6 +247,22 @@ function products_true_false() {
 }
 
 /**
+ * Default options
+ * an array of defaults
+ * @author Chris Reynolds
+ * @since 0.3.1
+ */
+function products_get_defaults() {
+	$products_defaults = array(
+		'products-merchant' => 'paypal',
+		'products-html' => 'html',
+		'cross-sales' => false,
+		'add-to-cart' => null
+	);
+	return $products_defaults;
+}
+
+/**
  * Custom meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
