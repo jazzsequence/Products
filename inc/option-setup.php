@@ -122,7 +122,7 @@ function products_add_to_cart_button_display() {
 			$add_to_cart = 'https://checkout.google.com/buttons/buy.gif?w=117&h=48&style=white&variant=text&loc=en_US';
 		}
 		if ( $options['products-merchant'] == 'cart66' ) {
-			$add_to_cart = home_url() . '/wp-content/plugins/cart66/images/add-to-cart.png';
+			$add_to_cart = product_plugin_images . 'add-to-cart.png';
 		}
 	}
 	$help = __( 'Use the uploader to upload a PNG, JPG, or GIF file to use as an add to cart button.  If no image is specified, the default will be used.', 'products' )
