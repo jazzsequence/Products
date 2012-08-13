@@ -26,6 +26,20 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ### 0.3.1
 
+* added defaults array
+* removed old add to cart button option in the edit product page
+* set custom add to cart button as the default for cart66
+* removed old image uploader files
+* added admin scripts
+* consolodated custom icons into one function
+* added presstrends
+* removed old uploader script and replaced with WordPress media uploader
+* added add-to-cart button option
+* adds html input area for button code
+* set the html/url option to not display if cart66 is selected as merchant
+* loops through products & grabs permalink to store as meta value on the product for cross-sales
+* added display cross-sales option
+* added generic true/false option array
 * implemented merchant options on add product page
 * added display option on options page for HTML/URL buttons for Google/PayPal
 * added new option for hTML embed code or URL to checkout page
