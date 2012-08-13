@@ -3,7 +3,7 @@
 Plugin Name: Products
 Plugin URI: http://arcanepalette.com
 Description: A simple shop plugin based on custom post types with integrated support for Cart66
-Version: 0.3.1
+Version: 0.4
 Author: Arcane Palette Creative Design
 Author URI: http://arcanepalette.com/
 License: GPL3
