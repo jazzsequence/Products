@@ -257,7 +257,8 @@ function products_get_defaults() {
 		'products-merchant' => 'paypal',
 		'products-html' => 'html',
 		'cross-sales' => false,
-		'add-to-cart' => null
+		'add-to-cart' => null,
+		'cart66_id' => ''
 	);
 	return $products_defaults;
 }
@@ -315,9 +316,52 @@ function meta_cpt_product() {
     	);
     	switch( $options['products-merchant'] ) {
     		case 'cart66' :
-    			echo '<p><label for="cart66_id"><strong>Cart66 Product ID</strong></label><br />';
-				echo '<input style="width: 15%;" type="text" name="cart66_id" value="'.get_post_meta($post->ID, 'cart66_id', true).'" /><br />';
-				echo '<em>Enter the Cart66 product ID number here.  You can get this from the <a href="admin.php?page=cart66-products">Cart66 Products</a> page.</em></p>';
+    			echo '<p><label for="cart66_id"><strong>Cart66 Product</strong></label><br />';
+				$products_selected = get_post_meta( $post->ID, 'cart66_id', true );
+				//var_dump($products_selected);?>
+				<select id="cart66_id" name="cart66_id">
+				<?php
+			      	$products = Cart66Product::loadProductsOutsideOfClass();
+			      	//$products = $product->getModels("where id>0", "order by name");
+			      	if(count($products)):
+			        	$i=0;
+			        	foreach($products as $p) {
+			          		$optionClasses = "";
+			          		if($p->item_number==""){
+			            		$id=$p->id;
+			            		$type='id';
+			            		$description = "";
+			          		} else {
+			            		$id=$p->item_number;
+			            		$type='item';
+			            		$description = '(# '.$p->item_number.')';
+			          		}
+
+			          		$types[] = htmlspecialchars($type);
+
+			          		if(CART66_PRO && $p->is_paypal_subscription == 1) {
+					            $sub = new Cart66PayPalSubscription($p->id);
+					            $subPrice = strip_tags($sub->getPriceDescription($sub->offerTrial > 0, '(trial)'));
+					            $prices[] = htmlspecialchars($subPrice);
+					            $optionClasses .= " subscriptionProduct ";
+					            //Cart66Common::log('[' . basename(__FILE__) . ' - line ' . __LINE__ . "] subscription price in dialog: $subPrice");
+			          		} else {
+					            $priceDescription = __('Price:', 'cart66') . ' ' . CART66_CURRENCY_SYMBOL . $p->price;
+					            if($p->price_description != null) {
+					              $priceDescription = $p->price_description;
+			        		    }
+
+				            $prices[] = htmlspecialchars(strip_tags($priceDescription));
+			    		      }
+			    		       ?>
+			    		      <option value="<?php echo $id; ?>" <?php selected( $products_selected, $id ); ?>><?php echo $p->name . ' ' . $description; ?></option>
+			          		<?php
+			          		$i++;
+			        	}
+			      		else: ?>
+			      			<option value=""><?php _e( 'No Products', 'cart66' ); ?></option>
+			      		<?php endif; ?>
+				</select><?php
 				break;
 			case 'paypal' :
 				if ( $options['products-html'] == 'url' ) {
@@ -334,13 +378,13 @@ function meta_cpt_product() {
 				}
 			break;
     	}
-    	if ( $options['products-html'] == 'html' ) {
+    	if ( $options['products-html'] == 'html' && $options['products-merchant'] != 'cart66' ) {
 			echo '<p><label for="button_html"><strong>Button HTML</strong></label><br />';
-			echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="google_button_html">' . wp_kses( get_post_meta($post->ID, 'button_html', true), $form_html ) . '</textarea>';
+			echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="button_html">' . wp_kses( get_post_meta($post->ID, 'button_html', true), $form_html ) . '</textarea>';
 		}
     }
     if ( $options['cross-sales'] ) {
-		echo '<label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
+		echo '<p><label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
 	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
 		?>
 		<select name="cross_sales" id="cross_sales">
@@ -355,7 +399,7 @@ function meta_cpt_product() {
 	  	</select><br />
 	  	<?php wp_reset_postdata();
 		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
-	}
+	} 
 
 }
 
@@ -438,9 +482,7 @@ function product_icons() {
 		#menu-posts-ap_products:hover .wp-menu-image, #menu-posts-ap_products.wp-has-current-submenu .wp-menu-image {
 			background: url(<?php echo product_plugin_images; ?>price-tag.png) no-repeat 6px 7px !important;
         }
-	<?php if (($_GET['post_type'] == 'ap_products') || ($post_type == 'ap_products')) : ?>
-		#icon-edit { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
-	<?php endif; ?>
+		#icon-edit.icon32-posts-ap_products { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
     </style>
 <?php
 }
