@@ -26,6 +26,8 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ### 0.4
 
+* added cart66 product selector
+
 ### 0.3.1
 
 * added defaults array
