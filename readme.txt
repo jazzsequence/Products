@@ -23,7 +23,7 @@ It might bear reiterating that any time a plugin tries to make assumptions abou
 
 Extract the zip file and just drop the contents in the `wp-content/plugins/` directory of your WordPress installation and then activate the Plugin from Plugins page.
 
-## Changelog
+== Changelog ==
 
 ### 0.4
 
