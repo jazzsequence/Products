@@ -5,6 +5,7 @@ Tags: e-commerce, custom post types, products
 Requires at least: 2.9  
 Tested up to: 3.4.1  
 Stable tag: 0.4
+~Current Version: 0.3~
 
 A simple shop plugin based on custom post types with integrated support for Cart66
 
@@ -27,6 +28,7 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 ### 0.4
 
 * added cart66 product selector
+* added WordPress GitHub Plugin Updater by jkudish
 
 ### 0.3.1
 
