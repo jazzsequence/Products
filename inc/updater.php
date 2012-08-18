@@ -168,6 +168,7 @@ class WPGitHubUpdater {
 	 * @return object
 	 */
 	public function get_repo_transport( $meta ) {
+
 		if ( !empty( $meta['git uri'] ) ) {
 			$parsed = parse_url( $meta['git uri'] );
 		}else {
@@ -253,8 +254,8 @@ class WPGitHubUpdater {
 		$response->requires = $plugin->requires;
 		$response->tested = $plugin->tested;
 		$response->downloaded   = 0;
-		$response->last_updated = $plugin->last_updated;
-		$response->sections = array( 'description' => $plugin->description );
+		$response->last_updated = $plugin->github_data->updated_at;
+		$response->sections = array( 'description' => $plugin->Description );
 		$response->download_link = $plugin->zip_url;
 
 		return $response;
