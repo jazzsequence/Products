@@ -30,6 +30,12 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 * removed ~Current Version:x~ line in readme
 * added git uri to plugin header
 * fixed some bugs in new updater class for plugin details display
+* changed Google Checkout to Google Wallet
+* added testimonials post type if shop testimonials are active
+* added textdomain for l10n
+* added shop/product testimonial defaults
+* added icons for testomonials post type
+* added (renamed) quotes/testimonials widget from opal-ecommerce theme
 
 ### 0.4
 
