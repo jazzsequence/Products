@@ -101,6 +101,61 @@ function products_cross_sales_option_display() {
 	</tr>
 	<?php
 }
+/**
+ * Shop testimonials option
+ * @since 0.5
+ * @author Chris Reynolds
+ * displays an option to display shop testimonials
+ */
+function products_shop_testimonials_option_display() {
+	$defaults = products_get_defaults();
+	$options = get_option( 'ap_products_settings', $defaults );
+	?>
+	<tr valign="top"><th scope="row"><?php _e( 'Display Shop Testimonials?', 'products' ); ?></th>
+		<td>
+			<select name="ap_products_settings[shop-testimonials]">
+			<?php
+				$selected = $options['shop-testimonials'];
+				$help = __( 'Displays store testimonials on shop pages (and product pages, where applicable).', 'products' );
+				foreach ( products_true_false() as $option ) {
+					$label = $option['label'];
+					$value = $option['value'];
+					echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+				} ?>
+			</select><br />
+			<label class="description" for="ap_products_settings[shop-testimonials]"><?php echo $help; ?></label>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
+ * Product testimonials option
+ * @since 0.5
+ * @author Chris Reynolds
+ * displays an option to display product testimonials (on product pages)
+ */
+function products_product_testimonials_option_display() {
+	$defaults = products_get_defaults();
+	$options = get_option( 'ap_products_settings', $defaults );
+	?>
+	<tr valign="top"><th scope="row"><?php _e( 'Display Product Testimonials?', 'products' ); ?></th>
+		<td>
+			<select name="ap_products_settings[product-testimonials]">
+			<?php
+				$selected = $options['product-testimonials'];
+				$help = __( 'Displays product testimonials on product pages (defaults to shop testimonials when no product testimonial exists).', 'products' );
+				foreach ( products_true_false() as $option ) {
+					$label = $option['label'];
+					$value = $option['value'];
+					echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+				} ?>
+			</select><br />
+			<label class="description" for="ap_products_settings[product-testimonials]"><?php echo $help; ?></label>
+		</td>
+	</tr>
+	<?php
+}
 
 /**
  * Add to Cart Button
@@ -158,6 +213,8 @@ function ap_products_do_options() {
 	products_HTML_URI_option_display();
 	products_cross_sales_option_display();
 	products_add_to_cart_button_display();
+	products_shop_testimonials_option_display();
+	products_product_testimonials_option_display();
 	echo $options_after;
 }
 ?>
