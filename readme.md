@@ -5,7 +5,6 @@ Tags: e-commerce, custom post types, products
 Requires at least: 2.9  
 Tested up to: 3.4.1  
 Stable tag: 0.5  
-~Current Version:0.6~
 
 A simple shop plugin based on custom post types with integrated support for Cart66
 
