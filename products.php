@@ -43,18 +43,18 @@ License: GPL3
  */
 function post_type_products() {
     $labels = array(
-		'name' => _x('Products', 'post type general name'),
-		'singular_name' => _x('Product', 'post type singular name'),
-		'add_new' => _x('Add New', 'product'),
-		'add_new_item' => __('Add New Product'),
-		'edit_item' => __('Edit Product'),
-		'edit' => _x('Edit', 'products'),
-		'new_item' => __('New Product'),
-		'view_item' => __('View Product'),
-		'search_items' => __('Search Products'),
-		'not_found' =>  __('No products found'),
-		'not_found_in_trash' => __('No products found in Trash'),
-		'view' =>  __('View Product'),
+		'name' => __('Products', 'products'),
+		'singular_name' => __('Product', 'products'),
+		'add_new' => __('Add New', 'products'),
+		'add_new_item' => __('Add New Product','products'),
+		'edit_item' => __('Edit Product','products'),
+		'edit' => __('Edit', 'products'),
+		'new_item' => __('New Product','products'),
+		'view_item' => __('View Product','products'),
+		'search_items' => __('Search Products','products'),
+		'not_found' =>  __('No products found','products'),
+		'not_found_in_trash' => __('No products found in Trash','products'),
+		'view' =>  __('View Product','products'),
 		'parent_item_colon' => ''
   	);
 	$args = array(
@@ -92,14 +92,14 @@ add_action( 'init', 'post_type_products', 0 );
  */
 function product_categories() {
 $product_category_labels = array(
-	'name' => __( 'Product Categories' ),
-	'singular_name' => __( 'Product Category' ),
-	'search_items' => __( 'Search Categories' ),
-	'all_items' => __( 'All Categories' ),
-	'edit_item' => __( 'Edit Category' ),
-	'update_item' => __( 'Update ' ),
-	'add_new_item' => __( 'Add New Product Category' ),
-	'new_item_name' => __( 'New Product Category Name' ),
+	'name' => __( 'Product Categories','products' ),
+	'singular_name' => __( 'Product Category','products' ),
+	'search_items' => __( 'Search Categories','products' ),
+	'all_items' => __( 'All Categories','products' ),
+	'edit_item' => __( 'Edit Category','products' ),
+	'update_item' => __( 'Update','products' ),
+	'add_new_item' => __( 'Add New Product Category','products' ),
+	'new_item_name' => __( 'New Product Category Name','products' ),
 	);
 	register_taxonomy(
 		'product_category',
@@ -118,6 +118,120 @@ $product_category_labels = array(
 	}
 
 add_action( 'init', 'product_categories', 0 ); // taxonomy for product categories
+
+/**
+ * Testimonials Post Type
+ * @author Chris Reynolds
+ * @link http://justintadlock.com/archives/2010/04/29/custom-post-types-in-wordpress
+ * @since 0.5
+ * create a custom post type for testimonials
+ */
+function ap_post_type_testimonials() {
+	$labels = array(
+		'name' => __('Testimonials', 'products'),
+		'singular_name' => __('Testimonial', 'products'),
+		'add_new' => __('Add New', 'products'),
+		'add_new_item' => __('Add New Testimonial','products'),
+		'edit_item' => __('Edit Testimonial','products'),
+		'edit' => __('Edit', 'products'),
+		'new_item' => __('New Testimonial','products'),
+		'view_item' => __('View Testimonial','products'),
+		'search_items' => __('Search Testimonials','products'),
+		'not_found' =>  __('No testimonials found','products'),
+		'not_found_in_trash' => __('No testimonials found in Trash','products'),
+		'view' =>  __('View Testimonial','products'),
+		'parent_item_colon' => ''
+  );
+	$args = array(
+		'labels' => $labels,
+		'public' => true,
+		'publicly_queryable' => true,
+		'show_ui' => true,
+		'query_var' => true,
+		'rewrite' => false,
+		'capability_type' => 'post',
+		'hierarchical' => false,
+		'menu_position' => 6,
+		'supports' => array( 'editor' ),
+		'exclude_from_search' => true
+  );
+
+  register_post_type( 'ap_testimonials', $args );
+}
+$options = get_option( 'ap_products_settings' );
+if ( $options['shop-testimonials'] ) {
+	/* add the custom post type */
+	add_action( 'init', 'ap_post_type_testimonials', 0 );
+}
+
+
+/**
+ * Testimonials Meta Boxes
+ * @author Chris Reynolds
+ * @since 0.5
+ * this creates the meta boxes for additional information that we'll be using for the testimonials
+ */
+function ap_testimonials_meta() {
+	add_meta_box( 'testimonials_meta', 'Testimonial Author Info', 'ap_testimonials_author_meta', 'ap_testimonials', 'normal', 'low' );
+}
+add_action( 'admin_menu', 'ap_testimonials_meta' );
+
+function ap_testimonials_author_meta() {
+	global $post;
+
+	echo '<input type="hidden" name="ap_noncename" id="ap_noncename" value="' .
+	wp_create_nonce( wp_basename(__FILE__) ) . '" />';
+
+	echo '<p><label for="testimonial_author"><strong>Testimonial Author</strong></label><br />';
+	echo '<input style="width: 60%;" type="text" name="testimonial_author" value="' . get_post_meta( $post->ID, 'testimonial_author', true ) . '" /><br />';
+	echo '<em>The testimonial author\'s name.</em></p>';
+
+	echo '<p><label for="testimonial_author_website"><strong>Author\'s Website Name</strong></label><br />';
+	echo '<input style="width: 60%;" type="text" name="testimonial_author_website" value="' . get_post_meta( $post->ID, 'testimonial_author_website', true ) . '" /><br />';
+	echo '<em>(Optional) If not blank, will display author\'s website under his/her name.</em></p>';
+
+	echo '<p><label for="testimonial_author_website_url"><strong>Author\'s Website URL</strong></label><br />';
+	echo '<input style="width: 60%;" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
+	echo '<em>(Optional) If not blank, will link website name to author\'s website.</em></p>';
+}
+
+/**
+ * Custom columns for custom post type
+ * @link http://devpress.com/blog/custom-columns-for-custom-post-types/
+ * @author Chris Reynolds
+ * @since 0.5
+ * adds custom columns for testimonials post type so unused "title" column is not displayed
+ */
+function ap_edit_testimonials_columns( $columns ) {
+	$columns = array(
+		'cb' => '<input type="checkbox" />',
+		'testimonial_author' => __( 'Testimonial','products' ),
+		'date' => __( 'Date','products' )
+	);
+	return $columns; // yeah, that one's important *smacks forehead*
+}
+add_filter( 'manage_edit-ap_testimonials_columns', 'ap_edit_testimonials_columns' );
+
+function ap_manage_testimonials_columns( $column, $post_id ) {
+	global $post;
+
+	/* using a switch because that's what the stupid tut uses and I haven't yet figured
+	out how to do it without the switch when I only want to return a single custom column */
+	switch( $column ) {
+		case 'testimonial_author' :
+			$author = get_post_meta( $post_id, 'testimonial_author', true );
+			/* if the author is blank, use the website name instead */
+			if ( empty( $author )) {
+				$author = get_post_meta( $post_id, 'testimonial_author_website', true );
+			}
+			echo '<a class="row-title" href="' . get_site_url() . '/wp-admin/post.php?post=' . $post_id . '&action=edit">' . $author . '</a>';
+			break;
+		default :
+			break;
+	}
+}
+add_action( 'manage_ap_testimonials_posts_custom_column', 'ap_manage_testimonials_columns', 10, 2 );
+/* TODO make a product testimonials widget */
 
 /**
  * Register Product Options
@@ -261,7 +375,9 @@ function products_get_defaults() {
 		'products-html' => 'html',
 		'cross-sales' => false,
 		'add-to-cart' => null,
-		'cart66_id' => ''
+		'cart66_id' => '',
+		'shop-testimonials' => false,
+		'product-testimonials' => false
 	);
 	return $products_defaults;
 }
@@ -402,7 +518,12 @@ function meta_cpt_product() {
 	  	</select><br />
 	  	<?php wp_reset_postdata();
 		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
-	} 
+	}
+	if ( $options['product-testimonials'] ) {
+		echo '<p><label for="testimonials"><strong>Product testimonials</strong></label><br />';
+		wp_editor( get_post_meta( $post->ID, 'testimonials', true ), 'testimonials', array( 'textarea_rows' => 5 ) );
+		echo '<em>To be displayed in the sidebar on the product page.  If left blank, shop testimonials will be used instead (if any exist).</em></p>';
+	}
 
 }
 
@@ -485,7 +606,14 @@ function product_icons() {
 		#menu-posts-ap_products:hover .wp-menu-image, #menu-posts-ap_products.wp-has-current-submenu .wp-menu-image {
 			background: url(<?php echo product_plugin_images; ?>price-tag.png) no-repeat 6px 7px !important;
         }
+        #menu-posts-ap_testimonials .wp-menu-image {
+            background: url(<?php echo product_plugin_images; ?>balloon-quotation.png) no-repeat 6px -17px !important;
+        }
+		#menu-posts-ap_testimonials:hover .wp-menu-image, #menu-posts-ap_testimonials.wp-has-current-submenu .wp-menu-image {
+			background: url(<?php echo product_plugin_images; ?>balloon-quotation.png) no-repeat 6px 7px !important;
+        }
 		#icon-edit.icon32-posts-ap_products { background: url(<?php echo product_plugin_images; ?>tag.png) no-repeat!important; }
+		#icon-edit.icon32-posts-ap_testimonials { background: url(<?php echo product_plugin_images; ?>testimonial.png) no-repeat!important; }
     </style>
 <?php
 }
