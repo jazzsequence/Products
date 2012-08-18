@@ -198,7 +198,7 @@ function products_merchant_options() {
 		),
 		'google' => array(
 			'value' => 'google',
-			'label' => __( 'Google Checkout', 'products' )
+			'label' => __( 'Google Wallet', 'products' )
 		),
 		'paypal' => array(
 			'value' => 'paypal',
