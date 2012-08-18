@@ -26,6 +26,10 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ### 0.5
 
+* switched to @pdclark's f/gitweb fork of GitHub Updater class
+* removed ~Current Version:x~ line in readme
+* added git uri to plugin header
+* fixed some bugs in new updater class for plugin details display
 
 ### 0.4
 
