@@ -28,7 +28,26 @@ License: GPL3
 	define('product_plugin_path', WP_PLUGIN_URL . '/products/');
 	define('product_plugin_dir', WP_PLUGIN_DIR . '/products/');
 	define('product_plugin_images', product_plugin_path . 'images/');
+
+function products_github_updater() {
+	/* load plugin updater by jkudish */
 	include_once( product_plugin_dir . 'inc/updater.php' );
+	if (is_admin()) { // note the use of is_admin() to double check that this is happening in the admin
+	    $config = array(
+	        'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
+	        'proper_folder_name' => 'products', // this is the name of the folder your plugin lives in
+	        'api_url' => 'https://api.github.com/repos/jazzsequence/Products', // the github API url of your github repo
+	        'raw_url' => 'https://raw.github.com/jazzsequence/Products/master', // the github raw url of your github repo
+	        'github_url' => 'https://github.com/jazzsequence/Products/', // the github url of your github repo
+	        'zip_url' => 'https://github.com/jazzsequence/Products/zipball/master', // the zip url of the github repo
+	        'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
+	        'requires' => '2.9', // which version of WordPress does your plugin require?
+	        'tested' => '3.4.1', // which version of WordPress is your plugin tested up to?
+	        'readme' => 'readme.md' // which file to use as the readme for the version number
+	    );
+	    new WPGitHubUpdater($config);
+}
+add_action( 'init', 'products_github_updater' );
 
 /**
  * Products Post Type
@@ -126,21 +145,6 @@ add_action( 'init', 'product_categories', 0 ); // taxonomy for product categorie
  */
 function ap_products_settings_init() {
 	register_setting( 'ap_products_settings', 'ap_products_settings' /*, add sanitization callback */ );
-	/* load plugin updater by jkudish */
-	if (is_admin()) { // note the use of is_admin() to double check that this is happening in the admin
-	    $config = array(
-	        'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
-	        'proper_folder_name' => 'products', // this is the name of the folder your plugin lives in
-	        'api_url' => 'https://api.github.com/repos/jazzsequence/Products', // the github API url of your github repo
-	        'raw_url' => 'https://raw.github.com/jazzsequence/Products/master', // the github raw url of your github repo
-	        'github_url' => 'https://github.com/jazzsequence/Products/', // the github url of your github repo
-	        'zip_url' => 'https://github.com/jazzsequence/Products/zipball/master', // the zip url of the github repo
-	        'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
-	        'requires' => '2.9', // which version of WordPress does your plugin require?
-	        'tested' => '3.4.1', // which version of WordPress is your plugin tested up to?
-	        'readme' => 'readme.md' // which file to use as the readme for the version number
-	    );
-	    new WPGitHubUpdater($config);
 	}
 }
 add_action( 'admin_init', 'ap_products_settings_init' );
