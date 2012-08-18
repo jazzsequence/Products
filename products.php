@@ -234,6 +234,87 @@ add_action( 'manage_ap_testimonials_posts_custom_column', 'ap_manage_testimonial
 /* TODO make a product testimonials widget */
 
 /**
+ * Testimonials widget
+ * @since 0.5
+ * @author Chris Reynolds
+ * @uses register_widget
+ * @uses WP_Widget
+ * creates a sidebar widget for testimonials
+ * defaults to display shop testimonials on shop page and product testimonials on products page
+ * if no product testimonials exist, will fall back to shop testimonials
+ * if neither exist, won't display anything
+ */
+function ap_products_testimonials_widget() {
+	register_widget( 'product_testimonials_widget' );
+}
+
+class product_testimonials_widget extends WP_Widget {
+	function product_testimonials_widget() {
+		global $ap_textdomain;
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => 'products_testimonial', 'description' => __('A widget for displaying quotes or product testimonials.',$ap_textdomain) );
+
+		/* Widget control settings. */
+		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'opal-widget' );
+
+		/* Create the widget. */
+		$this->WP_Widget( 'opal-widget', 'Opal E-Commerce Quote Widget', $widget_ops, $control_ops );
+	}
+	function widget( $args, $instance ) {
+		extract( $args );
+
+		/* User-selected settings. */
+		$title = apply_filters('widget_title', $instance['title'] );
+		$quote = $instance['quote'];
+		$source = $instance['source'];
+
+		/* Before widget (defined by themes). */
+		echo $before_widget;
+
+		/* Title of widget (before and after defined by themes). */
+		if ( $title )
+			echo $before_title . $title . $after_title;
+
+		/* Display quote from widget settings. */
+		if ( $quote )
+			echo '<div class="products-testimonial">&ldquo;'.$quote.'&rdquo;';
+
+		/* Show quote source */
+		if ( $source )
+			echo '<p class="products-testimonial-source">&mdash;&nbsp;' . $source . '</p>';
+
+		/* After widget (defined by themes). */
+		echo $after_widget;
+	}
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+
+		/* Strip tags (if needed) and update the widget settings. */
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['quote'] = strip_tags( $new_instance['quote'] );
+		$instance['source'] = strip_tags( $new_instance['source'] );
+
+		return $instance;
+	}
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array( 'title' => '', 'quote' => '', 'source' => '' );
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'quote' ); ?>"><?php _e('Quote:',$ap_textdomain); ?></label>
+			<textarea id="<?php echo $this->get_field_id( 'quote' ); ?>" name="<?php echo $this->get_field_name( 'quote' ); ?>" style="width:100%;" /><?php echo $instance['quote']; ?></textarea>
+		</p>
+
+		<p>
+			<label for="<?php echo $this->get_field_id( 'soruce' ); ?>"><?php _e('Quote Source:',$ap_textdomain); ?></label>
+			<input id="<?php echo $this->get_field_id( 'source' ); ?>" name="<?php echo $this->get_field_name( 'source' ); ?>" value="<?php echo $instance['source']; ?>" style="width:100%;" />
+		</p><?php
+	}
+}
+add_action( 'widgets_init', 'ap_products_testimonials_widget' );
+
+/**
  * Register Product Options
  * sets up the settings for the options page
  * @author Chris Reynolds
