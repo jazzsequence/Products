@@ -9,7 +9,8 @@ Author: Arcane Palette Creative Design
 Author URI: http://arcanepalette.com/
 License: GPL3
 */
-
+// TODO add item number, brand, model(?), price meta fields
+// TODO add inquire for price option
 /*
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -250,9 +251,10 @@ function ap_products_testimonials_widget() {
 
 class product_testimonials_widget extends WP_Widget {
 	function product_testimonials_widget() {
-		global $ap_textdomain;
+		//TODO this needs work
+
 		/* Widget settings. */
-		$widget_ops = array( 'classname' => 'products_testimonial', 'description' => __('A widget for displaying quotes or product testimonials.',$ap_textdomain) );
+		$widget_ops = array( 'classname' => 'products_testimonial', 'description' => __('A widget for displaying quotes or product testimonials.','products') );
 
 		/* Widget control settings. */
 		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'opal-widget' );
@@ -313,6 +315,128 @@ class product_testimonials_widget extends WP_Widget {
 	}
 }
 add_action( 'widgets_init', 'ap_products_testimonials_widget' );
+
+/**
+ * Related products widget
+ * @since 0.5.1
+ * @author Chris Reynolds
+ * @uses register_widget
+ * @uses WP_Widget
+ * @uses wp_query
+ * displays random related products based on taxonomy of current product if looking at a product page
+ */
+function ap_products_related_widget() {
+	register_widget( 'products_related_widget' );
+}
+class products_related_widget extends WP_Widget {
+	function products_related_widget() {
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => 'products_related', 'description' => __('A widget for displaying related products based on the currently displayed product.','products') );
+
+		/* Widget control settings. */
+		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'products-widget' );
+
+		/* Create the widget. */
+		$this->WP_Widget( 'products-widget', 'Related Products Widget', $widget_ops, $control_ops );
+	}
+	function widget( $args, $instance ) {
+		extract( $args );
+
+		/* User-selected settings. */
+		$title = apply_filters('widget_title', $instance['title'] );
+		$num_posts = $instance['num_posts'];
+
+		/* Before widget (defined by themes). */
+		echo $before_widget;
+		if ( is_page_template( 'page-shop.php' ) ) {
+			/* Title of widget (before and after defined by themes). */
+			if ( $title ) {
+				echo $before_title . $title . $after_title;
+			} else {
+				echo $before_title . __( 'You might also like:', 'products' ) . $after_title;
+			}
+
+			global $wp_query, $post;
+			$exclude = $wp_query->post->ID;
+			$post_id = $post->ID;
+			$args = array(
+				'post_type' => 'ap_products',
+				'posts_per_page' => $num_posts,
+				'orderby' => 'rand',
+				'post__not_in' => array($exclude)
+			);
+			$temp = $wp_query;
+			$wp_query = null;
+			$wp_query = new WP_Query();
+			$wp_query->query($args);
+				while ($wp_query->have_posts()) : $wp_query->the_post(); ?>			
+					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array(63,63,true)); ?></a>
+			<?php endwhile;
+		} else {
+			if ( 'ap_products' == get_post_type() || is_page_template( 'taxonomy-product_category.php' ) ) {
+
+				/* Title of widget (before and after defined by themes). */
+				if ( $title ) {
+					echo $before_title . $title . $after_title;
+				} else {
+					echo $before_title . __( 'You might also like:', 'products' ) . $after_title;
+				}
+
+				global $wp_query, $post;
+				$exclude = $wp_query->post->ID;
+				$post_id = $post->ID;
+				$taxonomy = get_the_terms($post->ID, 'product_category');  // declares a $term variable that we'll use later that calls in the taxonomies
+				foreach ( $taxonomy as $value ) // loop through the taxonomy meta to get the slug
+					$tax_slug = $value->slug;
+
+				//print_r($terms);
+				$args = array(
+					'post_type' => 'ap_products',
+					'product_category' => $tax_slug,
+					'posts_per_page' => $num_posts,
+					'orderby' => 'rand',
+					'post__not_in' => array($exclude)
+				);
+				$temp = $wp_query;
+				$wp_query = null;
+				$wp_query = new WP_Query();
+				$wp_query->query($args);
+					while ($wp_query->have_posts()) : $wp_query->the_post(); ?>			
+						<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array(63,63,true)); ?></a>
+				<?php endwhile;
+				//wp_reset_query();
+			}
+		}
+		/* After widget (defined by themes). */
+		echo $after_widget;
+	}
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+
+		/* Strip tags (if needed) and update the widget settings. */
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['num_posts'] = strip_tags( $new_instance['num_posts'] );
+
+		return $instance;
+	}
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array( 'title' => 'You might also like:', 'num_posts' => '6' );
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" class="widefat" value="<?php if ( !$instance['title'] ) { echo $defaults['title']; } else { echo $instance['title'];  } ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'num_posts' ); ?>"><?php _e('Number of products to show:', 'products'); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'num_posts' ); ?>" name="<?php echo $this->get_field_name( 'num_posts' ); ?>" size="3" value="<?php echo $instance['num_posts']; ?>" />
+		</p>
+		<?php
+	}
+}
+add_action( 'widgets_init', 'ap_products_related_widget' );
+
 
 /**
  * Register Product Options
