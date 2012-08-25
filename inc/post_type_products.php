@@ -33,7 +33,6 @@ function post_type_products() {
 		'rewrite' => array("slug" => "products"),
 		'capability_type' => 'post',
 		'hierarchical' => false,
-		'menu_position' => null,
 		'supports' => array( 'title','editor','thumbnail' ),
 		'exclude_from_search' => false,
 		'menu_position' => 5,
@@ -73,8 +72,8 @@ add_action('admin_menu', 'custom_meta_boxes_products');
  */
 function meta_cpt_product() {
     global $post;
-    // TODO add defaults array
-    $defaults = '';
+
+    //$defaults = products_get_defaults();
     $options = get_option( 'ap_products_settings' );
 
 	echo '<input type="hidden" name="product_noncename" id="product_noncename" value="' .
@@ -226,8 +225,7 @@ $product_category_labels = array(
 			)
 	); // register the product category taxonomy for products
 
-	}
+}
 
 add_action( 'init', 'product_categories', 0 ); // taxonomy for product categories
-
 ?>
