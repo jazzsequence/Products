@@ -246,7 +246,10 @@ add_action( 'manage_ap_testimonials_posts_custom_column', 'ap_manage_testimonial
  * if neither exist, won't display anything
  */
 function ap_products_testimonials_widget() {
-	register_widget( 'product_testimonials_widget' );
+	$defaults = products_get_defaults();
+	$options = get_option( 'ap_products_settings', $defaults );
+	if ( $options['shop-testimonials'] || $options['product-testimonials'] )
+		register_widget( 'product_testimonials_widget' );
 }
 
 class product_testimonials_widget extends WP_Widget {
@@ -254,13 +257,13 @@ class product_testimonials_widget extends WP_Widget {
 		//TODO this needs work
 
 		/* Widget settings. */
-		$widget_ops = array( 'classname' => 'products_testimonial', 'description' => __('A widget for displaying quotes or product testimonials.','products') );
+		$widget_ops = array( 'classname' => 'products_testimonial', 'description' => __('A widget for displaying quotes or product testimonials (if enabled in Product Options).  Will display shop testimonials on all shop pages and product testimonials (if they exist and are enabled) on individual product pages.','products') );
 
 		/* Widget control settings. */
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'opal-widget' );
+		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'products-testimonial' );
 
 		/* Create the widget. */
-		$this->WP_Widget( 'opal-widget', 'Opal E-Commerce Quote Widget', $widget_ops, $control_ops );
+		$this->WP_Widget( 'products-testimonial', 'Testimonials widget', $widget_ops, $control_ops );
 	}
 	function widget( $args, $instance ) {
 		extract( $args );
@@ -301,10 +304,14 @@ class product_testimonials_widget extends WP_Widget {
 	function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'title' => '', 'quote' => '', 'source' => '' );
+		$defaults = array( 'title' => 'Testimonials', 'num_posts' => '6' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'quote' ); ?>"><?php _e('Quote:',$ap_textdomain); ?></label>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" class="widefat" value="<?php if ( !$instance['title'] ) { echo $defaults['title']; } else { echo $instance['title'];  } ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'quote' ); ?>"><?php _e('Quote:','products'); ?></label>
 			<textarea id="<?php echo $this->get_field_id( 'quote' ); ?>" name="<?php echo $this->get_field_name( 'quote' ); ?>" style="width:100%;" /><?php echo $instance['quote']; ?></textarea>
 		</p>
 
