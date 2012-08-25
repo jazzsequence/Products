@@ -24,6 +24,9 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ## Changelog
 
+### 0.5.1
+* added related products widget
+
 ### 0.5
 
 * switched to @pdclark's f/gitweb fork of GitHub Updater class
