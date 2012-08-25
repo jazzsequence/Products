@@ -117,11 +117,6 @@ class product_testimonials_widget extends WP_Widget {
 		/* Set up some default widget settings. */
 		$defaults = array( 'title' => __( 'Testimonials', 'products' ), 'shop-only' => false, 'num_posts' => 3 );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
-		<?php
-		wp_enqueue_script('jquery');
-		wp_enqueue_script('thickbox',null,array('jquery'));
-		wp_enqueue_style('thickbox.css', '/'.WPINC.'/js/thickbox/thickbox.css', null, '1.0');
-		?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'products' ); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" class="widefat" value="<?php if ( !$instance['title'] ) { echo $defaults['title']; } else { echo $instance['title'];  } ?>" />
