@@ -52,7 +52,7 @@ if ( $options['shop-testimonials'] ) {
  * this creates the meta boxes for additional information that we'll be using for the testimonials
  */
 function ap_testimonials_meta() {
-	add_meta_box( 'testimonials_meta', 'Testimonial Author Info', 'ap_testimonials_author_meta', 'ap_testimonials', 'normal', 'low' );
+	add_meta_box( 'testimonial-author-info', 'Testimonial Author Info', 'ap_testimonials_author_meta', 'ap_testimonials', 'normal', 'low' );
 }
 add_action( 'admin_menu', 'ap_testimonials_meta' );
 
