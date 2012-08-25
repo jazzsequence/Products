@@ -270,6 +270,7 @@ class product_testimonials_widget extends WP_Widget {
 
 		/* User-selected settings. */
 		$title = apply_filters('widget_title', $instance['title'] );
+		$shop_only = $instance['shop-only'];
 		$quote = $instance['quote'];
 		$source = $instance['source'];
 
@@ -296,6 +297,7 @@ class product_testimonials_widget extends WP_Widget {
 
 		/* Strip tags (if needed) and update the widget settings. */
 		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['shop-only'] = $new_instance['shop-only'];
 		$instance['quote'] = strip_tags( $new_instance['quote'] );
 		$instance['source'] = strip_tags( $new_instance['source'] );
 
@@ -306,9 +308,33 @@ class product_testimonials_widget extends WP_Widget {
 		/* Set up some default widget settings. */
 		$defaults = array( 'title' => 'Testimonials', 'num_posts' => '6' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		<?php
+		wp_enqueue_script('jquery');
+		wp_enqueue_script('thickbox',null,array('jquery'));
+		wp_enqueue_style('thickbox.css', '/'.WPINC.'/js/thickbox/thickbox.css', null, '1.0');
+		?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'products' ); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" class="widefat" value="<?php if ( !$instance['title'] ) { echo $defaults['title']; } else { echo $instance['title'];  } ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'shop-only' ); ?>"><?php _e( 'Display on all pages?', 'products' ); ?></label>
+			<select name="<?php echo $this->get_field_id( 'shop-only' ); ?>">
+			<?php
+				$selected = $instance['shop-only'];
+				$help = __( 'If set to Yes, will display testimonials on all pages and single product testimonials on single product pages.  If set to No, testimonials will <em>only</em> display on shop pages and single product pages.', 'products' );
+				foreach ( products_true_false() as $option ) {
+					$label = $option['label'];
+					$value = $option['value'];
+					echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+				} ?>
+			</select> [<a href="#TB_inline?height=250&width=400&inlineId=products-help" class="thickbox">?</a>]
+			<div id="products-help" style="display: none;">
+				<h3>Display on all pages?</h3>
+				<p style="width: 400px;">
+					<?php echo $help; ?>
+				</p>
+			</div>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'quote' ); ?>"><?php _e('Quote:','products'); ?></label>
