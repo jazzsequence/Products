@@ -19,7 +19,6 @@ function ap_products_testimonials_widget() {
 
 class product_testimonials_widget extends WP_Widget {
 	function product_testimonials_widget() {
-		//TODO this needs work
 
 		/* Widget settings. */
 		$widget_ops = array( 'classname' => 'products_testimonial', 'description' => __('A widget for displaying quotes or product testimonials (if enabled in Product Options).  Will display shop testimonials on all shop pages and product testimonials (if they exist and are enabled) on individual product pages.','products') );
