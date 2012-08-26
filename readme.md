@@ -16,7 +16,7 @@ I originally developed this plugin with Cart66 in mind.  Cart66 is an awesome s
 
 ## Other notes
 
-It might bear reiterating that any time a plugin tries to make assumptions about the formatting and layout of your theme, there's only a very small possibility the plugin will get it right. Therefore, some theme customization will most likely be required no matter what you're using, just to make the divs and headings match up. By using this plugin, you\'re acknowledging that this is your responsibility as the user of the plugin and if you have any questions, I will do my best to help.
+It might bear reiterating that any time a plugin tries to make assumptions about the formatting and layout of your theme, there's only a very small possibility the plugin will get it right. Therefore, some theme customization will most likely be required no matter what you're using, just to make the divs and headings match up. By using this plugin, you're acknowledging that this is your responsibility as the user of the plugin and if you have any questions, I will do my best to help.
 
 ## Installation
 
