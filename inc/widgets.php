@@ -37,6 +37,7 @@ class product_testimonials_widget extends WP_Widget {
 		/* User-selected settings. */
 		$title = apply_filters('widget_title', $instance['title'] );
 		$shop_only = $instance['shop-only'];
+		$num_posts = $instance['num_posts'];
 
 		/* get options */
 		$defaults = products_get_defaults();
@@ -53,10 +54,41 @@ class product_testimonials_widget extends WP_Widget {
 			} else {
 				echo $before_title . __( 'Testimonials', 'products' ) . $after_title;
 			}
+				$testimonial_author_website = null;
+				$testimonial_author_website_url = null;
+				$source = __('anonymous','products');
+				$testimonial_author = '<span itemprop="author">' . get_post_meta( $post->ID, 'testimonial_author', true ) . '</span>';
+				if ( get_post_meta( $post->ID, 'testimonial_author_website' ) )
+					$testimonial_author_website = get_post_meta( $post->ID, 'testimonial_author_website', true );
+				if ( get_post_meta( $post->ID, 'testimonial_author_website_url' ) )
+					$testimonial_author_website_url = get_post_meta( $post->ID, 'testimonial_author_website_url', true );
+					$website_before = '<a itemprop="url" href="' . $testimonial_author_website_url . '" target="_blank">';
+					$website_after = '</a>';
 
-			/* Display quote from widget settings. */
-			echo '<div class="products-testimonial">'.$testimonial.'</div>';
+				if ( $testimonial_author && $testimonial_author_website && $testimonial_author_website_url ) {
+					$source = $testimonial_author . '<br />' . $website_before . $testimonial_author_website . $website_after;
+				}
+				if ( $testimonial_author && $testimonial_author_website && !$testimonial_author_website_url ) {
+					$source = $testimonial_author . '<br />' . $testimonial_author_website;
+				}
+				if ( $testimonial_author && $testimonial_author_website_url && !$testimonial_author_website ) {
+					$source = $website_before . $testimonial_author . $website_after;
+				}
+				if ( !$testimonial_author && $testimonial_author_website && $testimonial_author_website_url ) {
+					$source = $website_before . $testimonial_author_website . $website_after;
+				}
+				if ( !$testimonial_author && $testimonial_author_website && !$testimonial_author_website_url ) {
+					$source = $testimonial_author_website;
+				}
 
+			/* Display quote from widget settings. */ ?>
+			<aside class="testimonial" itemprop="review" itemscope itemtype="http://schema.org/Review">
+				<span itemprop="description">
+					<?php echo $testimonial; ?>
+				</span>
+				<?php if ( $source ) { echo '<div class="source">' . $source . '</div>'; } ?>
+			</aside>
+			<?php
 			/* After widget (defined by themes). */
 			echo $after_widget;
 		} else {
@@ -89,12 +121,12 @@ class product_testimonials_widget extends WP_Widget {
 				$testimonial_author_website = null;
 				$testimonial_author_website_url = null;
 				$source = __('anonymous','products');
-				$testimonial_author = get_post_meta( $post->ID, 'testimonial_author', true );
+				$testimonial_author = '<span itemprop="author">' . get_post_meta( $post->ID, 'testimonial_author', true ) . '</span>';
 				if ( get_post_meta( $post->ID, 'testimonial_author_website' ) )
 					$testimonial_author_website = get_post_meta( $post->ID, 'testimonial_author_website', true );
 				if ( get_post_meta( $post->ID, 'testimonial_author_website_url' ) )
 					$testimonial_author_website_url = get_post_meta( $post->ID, 'testimonial_author_website_url', true );
-					$website_before = '<a href="' . $testimonial_author_website_url . '" target="_blank">';
+					$website_before = '<a itemprop="url" href="' . $testimonial_author_website_url . '" target="_blank">';
 					$website_after = '</a>';
 
 				if ( $testimonial_author && $testimonial_author_website && $testimonial_author_website_url ) {
@@ -113,14 +145,17 @@ class product_testimonials_widget extends WP_Widget {
 					$source = $testimonial_author_website;
 				}
 				?>
-				<aside class="testimonial">
-					<?php the_content(); ?>
+				<aside class="testimonial" itemprop="review" itemscope itemtype="http://schema.org/Review">
+					<span itemprop="description">
+						<?php the_content(); ?>
+					</span>
 					<?php if ( $source ) { echo '<div class="source">' . $source . '</div>'; } ?>
 				</aside>
 				<?php
 				endwhile;
 				$wp_query = $temp;
 				$temp = null;
+				wp_reset_query();
 				/* After widget (defined by themes). */
 				echo $after_widget;
 			}

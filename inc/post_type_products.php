@@ -189,6 +189,17 @@ function meta_cpt_product() {
 		echo '<p><label for="testimonials"><strong>Product testimonials</strong></label><br />';
 		wp_editor( get_post_meta( $post->ID, 'testimonials', true ), 'testimonials', array( 'textarea_rows' => 5 ) );
 		echo '<em>To be displayed in the sidebar on the product page.  If left blank, shop testimonials will be used instead (if any exist).</em></p>';
+		echo '<p><label for="testimonial_author"><strong>Testimonial Author</strong></label><br />';
+		echo '<input class="widefat" type="text" name="testimonial_author" value="' . get_post_meta( $post->ID, 'testimonial_author', true ) . '" /><br />';
+		echo '<em>The testimonial author\'s name.</em></p>';
+
+		echo '<p><label for="testimonial_author_website"><strong>Author\'s Website Name</strong></label><br />';
+		echo '<input class="widefat" type="text" name="testimonial_author_website" value="' . get_post_meta( $post->ID, 'testimonial_author_website', true ) . '" /><br />';
+		echo '<em>(Optional) If not blank, will display author\'s website under his/her name.</em></p>';
+
+		echo '<p><label for="testimonial_author_website_url"><strong>Author\'s Website URL</strong></label><br />';
+		echo '<input class="widefat" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
+		echo '<em>(Optional) If not blank, will link website name to author\'s website.</em></p>';
 	}
 }
 

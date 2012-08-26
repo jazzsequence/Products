@@ -219,6 +219,9 @@ function ap_products_insert_post_data($data,$postarr) {
 		update_post_meta($postarr['ID'], 'button_html', $postarr['button_html']);
 		update_post_meta($postarr['ID'], 'cross_sales', $postarr['cross_sales']);
 		update_post_meta($postarr['ID'], 'testimonials', $postarr['testimonials']);
+		update_post_meta($postarr['ID'], 'testimonial_author', $postarr['testimonial_author']);
+		update_post_meta($postarr['ID'], 'testimonial_author_website', $postarr['testimonial_author_website']);
+		update_post_meta($postarr['ID'], 'testimonial_author_website_url', $postarr['testimonial_author_website_url']);
 	}
 	return $data;
 }
