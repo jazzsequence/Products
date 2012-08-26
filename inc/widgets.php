@@ -74,10 +74,6 @@ class product_testimonials_widget extends WP_Widget {
 				$wp_query = new WP_Query();
 				$wp_query->query($args);
 
-				while ($wp_query->have_posts()) :
-				/* Before widget (defined by themes). */
-				echo $before_widget;
-
 				/* Title of widget (before and after defined by themes). */
 				if ( $title ) {
 					echo $before_title . $title . $after_title;
@@ -85,14 +81,42 @@ class product_testimonials_widget extends WP_Widget {
 					echo $before_title . __( 'Testimonials', 'products' ) . $after_title;
 				}
 
-				$wp_query->the_post();
-				if ( get_post_meta( $post->ID,'' ) )
+				while ($wp_query->have_posts()) :
+				/* Before widget (defined by themes). */
+				echo $before_widget;
 
+				$wp_query->the_post();
+				$testimonial_author_website = null;
+				$testimonial_author_website_url = null;
+				$source = __('anonymous','products');
+				$testimonial_author = get_post_meta( $post->ID, 'testimonial_author', true );
+				if ( get_post_meta( $post->ID, 'testimonial_author_website' ) )
+					$testimonial_author_website = get_post_meta( $post->ID, 'testimonial_author_website', true );
+				if ( get_post_meta( $post->ID, 'testimonial_author_website_url' ) )
+					$testimonial_author_website_url = get_post_meta( $post->ID, 'testimonial_author_website_url', true );
+					$website_before = '<a href="' . $testimonial_author_website_url . '" target="_blank">';
+					$website_after = '</a>';
+
+				if ( $testimonial_author && $testimonial_author_website && $testimonial_author_website_url ) {
+					$source = $testimonial_author . '<br />' . $website_before . $testimonial_author_website . $website_after;
+				}
+				if ( $testimonial_author && $testimonial_author_website && !$testimonial_author_website_url ) {
+					$source = $testimonial_author . '<br />' . $testimonial_author_website;
+				}
+				if ( $testimonial_author && $testimonial_author_website_url && !$testimonial_author_website ) {
+					$source = $website_before . $testimonial_author . $website_after;
+				}
+				if ( !$testimonial_author && $testimonial_author_website && $testimonial_author_website_url ) {
+					$source = $website_before . $testimonial_author_website . $website_after;
+				}
+				if ( !$testimonial_author && $testimonial_author_website && !$testimonial_author_website_url ) {
+					$source = $testimonial_author_website;
+				}
 				?>
 				<aside class="testimonial">
 					<?php the_content(); ?>
-
-				
+					<?php if ( $source ) { echo '<div class="source">' . $source . '</div>'; } ?>
+				</aside>
 				<?php
 				endwhile;
 				$wp_query = $temp;
