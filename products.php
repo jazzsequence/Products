@@ -197,6 +197,15 @@ function products_load_admin_scripts() {
 	wp_enqueue_script('products_uploader', product_plugin_path . 'js/uploader.js', array( 'jquery', 'media-upload', 'thickbox' ) );
 }
 
+/**
+ * Insert post data
+ * @author Chris Reynolds
+ * @since 0.5.1
+ * @link http://wordpress.stackexchange.com/a/7522
+ * @uses update_post_meta
+ * @uses wp_insert_post_data
+ * stores post meta data for the custom post types
+ */
 function ap_products_insert_post_data($data,$postarr) {
 	if ($postarr['post_type'] == 'ap_testimonials') {
 		update_post_meta($postarr['ID'], 'testimonial_author', $postarr['testimonial_author']);
