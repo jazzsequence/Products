@@ -26,6 +26,12 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ### 0.5.1
 * added related products widget
+* updated testimonials widget
+* added option to display testimonials widget on all pages or just sales pages
+* moved widgets and post type functions into separate files
+* added function to update post meta data for cpts
+* moved testimonial meta box (for testimonial post type) to sidebar
+* dealt with figuring out if testimonial author data is incomplete
 
 ### 0.5
 
