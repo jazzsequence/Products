@@ -52,7 +52,7 @@ if ( $options['shop-testimonials'] ) {
  * this creates the meta boxes for additional information that we'll be using for the testimonials
  */
 function ap_testimonials_meta() {
-	add_meta_box( 'testimonial-author-info', 'Testimonial Author Info', 'ap_testimonials_author_meta', 'ap_testimonials', 'normal', 'low' );
+	add_meta_box( 'testimonial-author-info', 'Testimonial Author Info', 'ap_testimonials_author_meta', 'ap_testimonials', 'side', 'low' );
 }
 add_action( 'admin_menu', 'ap_testimonials_meta' );
 
@@ -63,15 +63,15 @@ function ap_testimonials_author_meta() {
 	wp_create_nonce( wp_basename(__FILE__) ) . '" />';
 
 	echo '<p><label for="testimonial_author"><strong>Testimonial Author</strong></label><br />';
-	echo '<input style="width: 60%;" type="text" name="testimonial_author" value="' . get_post_meta( $post->ID, 'testimonial_author', true ) . '" /><br />';
+	echo '<input class="widefat" type="text" name="testimonial_author" value="' . get_post_meta( $post->ID, 'testimonial_author', true ) . '" /><br />';
 	echo '<em>The testimonial author\'s name.</em></p>';
 
 	echo '<p><label for="testimonial_author_website"><strong>Author\'s Website Name</strong></label><br />';
-	echo '<input style="width: 60%;" type="text" name="testimonial_author_website" value="' . get_post_meta( $post->ID, 'testimonial_author_website', true ) . '" /><br />';
+	echo '<input class="widefat" type="text" name="testimonial_author_website" value="' . get_post_meta( $post->ID, 'testimonial_author_website', true ) . '" /><br />';
 	echo '<em>(Optional) If not blank, will display author\'s website under his/her name.</em></p>';
 
 	echo '<p><label for="testimonial_author_website_url"><strong>Author\'s Website URL</strong></label><br />';
-	echo '<input style="width: 60%;" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
+	echo '<input class="widefat" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
 	echo '<em>(Optional) If not blank, will link website name to author\'s website.</em></p>';
 }
 
