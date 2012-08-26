@@ -49,7 +49,7 @@ function post_type_products() {
 add_action( 'init', 'post_type_products', 0 );
 
 /**
- * Custom meta boxes
+ * Main meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
  * @since 0.1
