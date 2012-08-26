@@ -26,6 +26,8 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ### 0.7
 
+* updted note and description
+
 ### 0.5.1
 * added related products widget
 * updated testimonials widget
