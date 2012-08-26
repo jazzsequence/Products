@@ -197,6 +197,24 @@ function products_load_admin_scripts() {
 	wp_enqueue_script('products_uploader', product_plugin_path . 'js/uploader.js', array( 'jquery', 'media-upload', 'thickbox' ) );
 }
 
+function ap_products_insert_post_data($data,$postarr) {
+	if ($postarr['post_type'] == 'ap_testimonials') {
+		update_post_meta($postarr['ID'], 'testimonial_author', $postarr['testimonial_author']);
+		update_post_meta($postarr['ID'], 'testimonial_author_website', $postarr['testimonial_author_website']);
+		update_post_meta($postarr['ID'], 'testimonial_author_website_url', $postarr['testimonial_author_website_url']);
+	}
+	if ( $postarr['post_type'] == 'ap_products' ) {
+		update_post_meta($postarr['ID'], 'cart66_id', $postarr['cart66_id']);
+		update_post_meta($postarr['ID'], 'paypal_button_url', $postarr['paypal_button_url']);
+		update_post_meta($postarr['ID'], 'google_button_url', $postarr['google_button_url']);
+		update_post_meta($postarr['ID'], 'button_html', $postarr['button_html']);
+		update_post_meta($postarr['ID'], 'cross_sales', $postarr['cross_sales']);
+		update_post_meta($postarr['ID'], 'testimonials', $postarr['testimonials']);
+	}
+	return $data;
+}
+add_action('wp_insert_post_data','ap_products_insert_post_data',10,2);
+
 /**
  * Save product postdata
  * deal with saving the post and meta
