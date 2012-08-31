@@ -1,5 +1,209 @@
 <?php
 /**
+ * Product meta widget
+ * @since 0.7
+ * @author Chris Reynolds
+ * @uses register_widget
+ * @uses WP_Widget
+ * @uses get_post_meta
+ * creates a widget for the post meta, including payment button and any other
+ */
+function ap_products_meta_widget() {
+	register_widget( 'ap_product_meta_widget' );
+}
+class ap_product_meta_widget extends WP_Widget {
+	function ap_product_meta_widget() {
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => 'product_meta', 'description' => __('Displays the price, add to cart button, and any available product information.','products') );
+
+		/* Widget control settings. */
+		$control_ops = array( 'width' => 300, 'height' => 200, 'id_base' => 'product-meta' );
+
+		/* Create the widget. */
+		$this->WP_Widget( 'product-meta', 'Product Meta', $widget_ops, $control_ops );
+	}
+	function widget() {
+		global $wp_query;
+		// get options
+		$options = get_option( 'ap_products_settings' );
+		$post = $wp_query->post;
+
+		// product meta
+		$price = get_post_meta( $post->ID, 'price', true );
+		$item_num = get_post_meta( $post->ID, 'item_num', true );
+		$brand = get_post_meta( $post->ID, 'brand', true );
+		$model = get_post_meta( $post->ID, 'model', true );
+		$dimensions = get_post_meta( $post->ID, 'dimensions', true );
+		$notes = get_post_meta( $post->ID, 'notes', true );
+
+		echo $before_widget;
+		// determine whether we need to display the add to cart button or not
+		$inquire_sold_out = get_post_meta( $post->ID, 'inquire-sold-out', true );
+		switch ( $inquire_sold_out ) {
+			case 'none' :
+				// inquire for price or sold out are not set, so we're displaying the cart button ?>
+				<div class="ap_products-add_to_cart">
+				<?php
+
+					echo '<h3 itemprop="price">' . $price . '</h3>';
+					/* 	get the appropriate add to cart button and link
+						if a custom add to cart button has been uploaded, use that, otherwise, use the default image
+					*/
+					$is_cart66 = false;
+					$is_google = false;
+					$is_paypal = false;
+					switch ( $options['products-merchant'] ) {
+						case 'cart66' : // if we're using cart66
+							$is_cart66 = true;
+							if ( !$options['add-to-cart'] ) {
+								$add_to_cart_path = product_plugin_images . 'add-to-cart.png';
+							} else {
+								$add_to_cart_path = $options['add-to-cart'];
+							}
+						break;
+						case 'google' : // if we're using google
+							$is_google = true;
+							if ( !$options['add-to-cart'] ) {
+								$add_to_cart_path = 'https://checkout.google.com/buttons/buy.gif?w=117&h=48&style=white&variant=text&loc=en_US';
+							} else {
+								$add_to_cart_path = $options['add-to-cart'];
+							}
+						break;
+						case 'paypal' : // if we're using paypal
+							$is_paypal = true;
+							if ( !$options['add-to-cart'] ) {
+								$add_to_cart_path = 'https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif';
+							} else {
+								$add_to_cart_path = $options['add-to-cart'];
+							}
+						break;
+					}
+
+					if ( !$is_cart66 ) {
+						$paypal_button_url = get_post_meta( $post->ID, 'paypal_button_url', true );
+						$google_button_url = get_post_meta( $post->ID, 'google_button_url', true );
+						$cart66_prod_id = get_post_meta($post->ID,'cart66_id', true);
+						switch ( $options['products-html'] ) {
+							case 'url' : // if we're using a direct url
+								if( $is_paypal && $paypal_button_url )
+									echo '<a class="nostyle" href="' . $paypal_button_url . '" title="Pay via PayPal"><img src="' . $add_to_cart_path . '" alt="Pay via PayPal" /></a>';
+								if( $is_google && $google_button_url )
+									echo '<a class="nostyle" href="' . $google_button_url . '" title="Pay via Google Wallet"><img src="' . $add_to_cart_path . '" alt="Pay via Google Wallet" /></a>';
+							break;
+							case 'html' : // if we're using an embed code
+								if( get_post_meta($post->ID,'button_html') )
+									echo get_post_meta( $post->ID, 'button_html', true );
+							break;
+						}
+					} else { // we're using cart66
+						if(get_post_meta($post->ID,'cart66_id')) // but we'll check to make sure there's a cart66 product id
+							echo do_shortcode('[add_to_cart item="' . $cart66_prod_id . '" img="' . $add_to_cart_path . '"]');
+					}
+				?>
+				</div>
+			<?php break;
+				case 'inquire' :
+					// display an inquire for price ?>
+					<div class="inquire_for_price">
+						<h3>Inquire for price</h3>
+					</div>
+				<?php break;
+				case 'soldout' :
+					// display a sold out ?>
+					<div class="sold_out">
+						<h3 class="strike"><?php echo $price; ?></h3>
+						<h3>Sold Out!</h3>
+					</div>
+				<?php break;
+		} // ends $inquire_sold_out switch
+	?>
+	<div class="productmeta">
+		<?php if ( $item_num )
+			echo '<span itemprop="productID">' . __( 'Item: ' ) . $item_num . '</span> &bull; ';
+		if ( $model )
+			echo '<span itemprop="model">' . __( 'Model: ' ) . $model . '</span> &bull; ';
+		if ( $brand )
+			echo '<span itemprop="brand">' . __( 'Brand: ' ) . $brand . '</span> &bull; ';
+		if ( $dimensions )
+			echo __( 'Dimensions: ' ) . $dimensions . ' &bull; ';
+		if ( $notes )
+			echo __( 'Notes: ' ) . $notes; ?>
+	</div>
+<?php
+	wp_reset_query();
+	echo $after_widget;
+	}
+}
+add_action( 'widgets_init', 'ap_products_meta_widget' );
+
+/**
+ * Cross Sales Widget
+ * @since 0.7
+ * @author Chris Reynolds
+ * @uses register_widget
+ * @uses WP_Widget
+ * @uses wp_get_post_tags
+ * @uses get_post_meta
+ * Displays cross sales links (if active in the options)
+ */
+function ap_products_cross_sales_widget() {
+	$defaults = products_get_defaults();
+	$options = get_option( 'ap_products_settings', $defaults );
+	if ( $options['cross-sales'] ) {
+		register_widget( 'product_cross_sales_widget' );
+	}
+}
+class product_cross_sales_widget extends WP_Widget {
+	function product_cross_sales_widget() {
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => 'product_cross_sales', 'description' => __('Displays cross-sales links based on tags and any cross-sales link in the product.','products') );
+
+		/* Widget control settings. */
+		$control_ops = array( 'width' => 300, 'height' => 200, 'id_base' => 'product-cross-sales' );
+
+		/* Create the widget. */
+		$this->WP_Widget( 'product-cross-sales', 'Product Cross-sales', $widget_ops, $control_ops );
+	}
+	function widget() {
+		global $wp_query;
+
+		$post = $wp_query->post;
+		// list 3 post titles related to first two tags on current post
+		$tags = wp_get_post_tags($post->ID);
+		if ($tags) {
+			$first_tag = $tags[0]->term_id;
+			$second_tag = $tags[1]->term_id;
+			$args=array(
+				'tag__in' => array($first_tag,$second_tag),
+				'post__not_in' => array($post->ID),
+				'showposts'=>3,
+				'caller_get_posts'=>1,
+				'orderby'=>'rand'
+			);
+			$tag_query = new WP_Query($args);
+			echo '<h1> fuck ' . get_post_meta($post->ID,'cross_sales',true) . '</h1>';
+			if(( $tag_query->have_posts() ) || (get_post_meta($post->ID,'cross_sales')))  {
+				echo $before_widget;
+				echo __('You might be interested in', 'products') . '<br />';
+				$cross_sales = get_post_meta($post->ID, 'cross_sales', true);
+				if( $cross_sales ) {
+					echo $cross_sales;
+					//echo '<a href="' . $cross_sales_link . '">' . $cross_sales_text . '</a><br />';
+				}
+				while ($tag_query->have_posts()) : $tag_query->the_post(); ?>
+					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_title(); ?></a><br />
+				<?php endwhile;
+				wp_reset_query();
+				echo $after_widget;
+			}
+		}
+	}
+}
+
+add_action( 'widgets_init', 'ap_products_cross_sales_widget' );
+
+
+/**
  * Testimonials widget
  * @since 0.5
  * @author Chris Reynolds
@@ -278,6 +482,7 @@ class products_related_widget extends WP_Widget {
 				$exclude = $wp_query->post->ID;
 				$post_id = $post->ID;
 				$taxonomy = get_the_terms($post->ID, 'product_category');  // declares a $term variable that we'll use later that calls in the taxonomies
+				$tax_slug = null;
 				foreach ( $taxonomy as $value ) // loop through the taxonomy meta to get the slug
 					$tax_slug = $value->slug;
 
