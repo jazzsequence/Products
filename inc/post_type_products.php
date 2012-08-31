@@ -49,6 +49,73 @@ function post_type_products() {
 add_action( 'init', 'post_type_products', 0 );
 
 /**
+ * Product info meta boxes
+ * @author Chris Reynolds
+ * @since 0.7
+ * @uses add_meta_box
+ * adds additional meta information for products.  All this stuff is optional but can be used for schema.org schemas
+ */
+function ap_products_info_metaboxes() {
+	add_meta_box( "product-meta", "Product Information", "ap_products_info_meta", "ap_products", "side", "core");
+}
+add_action( 'admin_menu', 'ap_products_info_metaboxes' );
+
+/**
+ * Product Meta
+ * @author Chris Reynolds
+ * @since 0.7
+ * @uses wp_create_nonce
+ * @uses get_post_meta
+ * creates the actual meta fields on the product pages
+ */
+function ap_products_info_meta() {
+	global $post;
+	$options = get_option( 'ap_products_settings' );
+
+	echo '<input type="hidden" name="ap_noncename" id="ap_noncename" value="' .
+	wp_create_nonce( wp_basename(__FILE__) ) . '" />';
+
+	if ( $options['products-merchant'] != 'cart66' ) {
+		echo '<p><label for="price"><strong>Price</strong></label><br />';
+		echo '<input size="5" type="text" name="price" value="' . get_post_meta( $post->ID, 'price', true ) . '" /><br />';
+		echo '<em>Item price.</em></p>';
+	}
+
+	echo '<p><label for="inquire-sold-out"><strong>Inquire for Price/Sold Out?</strong><label><br />';
+	echo '<select name="inquire-sold-out">';
+	$selected = get_post_meta( $post->ID, 'inquire-sold-out', true );
+	foreach ( products_inquire_sold_out_options() as $option ) {
+		$label = $option['label'];
+		$value = $option['value'];
+		echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+	}
+	echo '</select><br />';
+	echo '<em>(Optional) Define whether the product should be set to "Inquire for price" or sold out.</em></p>';
+
+	if ( $options['products-merchant'] != 'cart66' ) {
+		echo '<p><label for="item_num"><strong>Item Number</strong></label><br />';
+		echo '<input class="widefat" type="text" name="item_num" value="' . get_post_meta( $post->ID, 'item_num', true ) . '" /><br />';
+		echo '<em>(Optional) Unique item/model number.</em></p>';
+	}
+
+	echo '<p><label for="brand"><strong>Brand</strong></label><br />';
+	echo '<input class="widefat" type="text" name="brand" value="' . get_post_meta( $post->ID, 'brand', true ) . '" /><br />';
+	echo '<em>(Optional) Brand, manufacturer or line.</em></p>';
+
+	echo '<p><label for="model"><strong>Model</strong></label><br />';
+	echo '<input class="widefat" type="text" name="model" value="' . get_post_meta( $post->ID, 'model', true ) . '" /><br />';
+	echo '<em>(Optional) Model name or number.</em></p>';
+
+	echo '<p><label for="dimensions"><strong>Dimensions</strong></label><br />';
+	echo '<input class="widefat" type="text" name="dimensions" value="' . get_post_meta( $post->ID, 'dimensions', true ) . '" /><br />';
+	echo '<em>(Optional) Product dimensions.</em></p>';
+
+	echo '<p><label for="notes"><strong>Other notes</strong></label><br />';
+	echo '<textarea class="widefat" name="notes">' . wp_kses( get_post_meta($post->ID, 'notes', true) ) . '</textarea>';
+	echo '<em>(Optional) Any other notes or product variations.</em></p>';
+}
+
+/**
  * Main meta boxes
  * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
  * @author Chris Reynolds
@@ -168,23 +235,6 @@ function meta_cpt_product() {
 			echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="button_html">' . wp_kses( get_post_meta($post->ID, 'button_html', true), $form_html ) . '</textarea>';
 		}
     }
-    if ( $options['cross-sales'] ) {
-		echo '<p><label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
-	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
-		?>
-		<select name="cross_sales" id="cross_sales">
-		  <?php
-		  $my_loop = new WP_Query( array( 'post_type' => 'ap_products', 'posts_per_page' => -1 ) );
-		  while ( $my_loop->have_posts() ) : $my_loop->the_post();
-		  	$title = get_the_title();
-		  	$permalink = get_permalink();
-		  	?>
-		  	<option value="<?php echo $permalink ?>" <?php selected( $cross_sales_selected, $permalink ); ?>><?php echo $title ?></option>
-		<?php endwhile; ?>
-	  	</select><br />
-	  	<?php wp_reset_postdata();
-		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
-	}
 	if ( $options['product-testimonials'] ) {
 		echo '<p><label for="testimonials"><strong>Product testimonials</strong></label><br />';
 		wp_editor( get_post_meta( $post->ID, 'testimonials', true ), 'testimonials', array( 'textarea_rows' => 5 ) );
@@ -200,6 +250,29 @@ function meta_cpt_product() {
 		echo '<p><label for="testimonial_author_website_url"><strong>Author\'s Website URL</strong></label><br />';
 		echo '<input class="widefat" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
 		echo '<em>(Optional) If not blank, will link website name to author\'s website.</em></p>';
+	}
+    if ( $options['cross-sales'] ) {
+		echo '<p><label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
+	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
+		?>
+		<select name="cross_sales" id="cross_sales">
+		  <?php
+			$temp = $wp_query;
+			$wp_query = null;
+			$wp_query = new WP_Query();
+		  	$wp_query = new WP_Query( array( 'post_type' => 'ap_products', 'posts_per_page' => -1 ) );
+		 	while ( $wp_query->have_posts() ) : $wp_query->the_post();
+		  		$title = get_the_title();
+		  		$permalink = get_permalink();
+		  	?>
+		  		<option value="<?php echo $permalink ?>" <?php selected( $cross_sales_selected, $permalink ); ?>><?php echo $title ?></option>
+			<?php endwhile;
+			$wp_query = $temp;
+			$temp = null;
+			wp_reset_query();?>
+	  	</select><br />
+	  	<?php
+		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
 	}
 }
 
