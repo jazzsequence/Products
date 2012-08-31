@@ -10,7 +10,7 @@ Author URI: http://arcanepalette.com/
 License: GPL3
 */
 // TODO add item number, brand, model(?), price meta fields
-// TODO add inquire for price option
+
 /*
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -98,6 +98,30 @@ function ap_products_settings_page() {
 		</div><!-- closes poststuff -->
 	</div>
 	<?php
+}
+
+/**
+ * Inquire/Sold Out option
+ * @author Chris Reynolds
+ * @since 0.7
+ * options array for inquire for price/sold out option for products
+ */
+function products_inquire_sold_out_options() {
+	$products_inquire_sold_out = array(
+		'none' => array(
+			'value' => 'none',
+			'label' => __( ' - None - ', 'products' )
+		),
+		'inquire' => array(
+			'value' => 'inquire',
+			'label' => __( 'Inquire for price', 'products' )
+		),
+		'soldout' => array(
+			'value' => 'soldout',
+			'label' => 'Sold Out'
+		)
+	);
+	return $products_inquire_sold_out;
 }
 
 /**
@@ -222,6 +246,13 @@ function ap_products_insert_post_data($data,$postarr) {
 		update_post_meta($postarr['ID'], 'testimonial_author', $postarr['testimonial_author']);
 		update_post_meta($postarr['ID'], 'testimonial_author_website', $postarr['testimonial_author_website']);
 		update_post_meta($postarr['ID'], 'testimonial_author_website_url', $postarr['testimonial_author_website_url']);
+		update_post_meta($postarr['ID'], 'price', $postarr['price']);
+		update_post_meta($postarr['ID'], 'inquire-sold-out', $postarr['inquire-sold-out']);
+		update_post_meta($postarr['ID'], 'item_num', $postarr['item_num']);
+		update_post_meta($postarr['ID'], 'brand', $postarr['brand']);
+		update_post_meta($postarr['ID'], 'model', $postarr['model']);
+		update_post_meta($postarr['ID'], 'dimensions', $postarr['dimensions']);
+		update_post_meta($postarr['ID'], 'notes', $postarr['notes']);
 	}
 	return $data;
 }
