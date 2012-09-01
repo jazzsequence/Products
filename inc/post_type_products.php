@@ -263,9 +263,10 @@ function meta_cpt_product() {
 		  	$wp_query = new WP_Query( array( 'post_type' => 'ap_products', 'posts_per_page' => -1 ) );
 		 	while ( $wp_query->have_posts() ) : $wp_query->the_post();
 		  		$title = get_the_title();
-		  		$permalink = get_permalink();
+		  		$id = get_the_ID();
+		  		echo $id;
 		  	?>
-		  		<option value="<?php echo $permalink ?>" <?php selected( $cross_sales_selected, $permalink ); ?>><?php echo $title ?></option>
+		  		<option value="<?php echo $id ?>" <?php selected( $cross_sales_selected, $id ); ?>><?php echo $title ?></option>
 			<?php endwhile;
 			$wp_query = $temp;
 			$temp = null;
