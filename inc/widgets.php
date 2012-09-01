@@ -559,9 +559,9 @@ class products_related_widget extends WP_Widget {
 			$thumb_size = 63;
 		}
 
-		/* Before widget (defined by themes). */
-		echo $before_widget;
 		if ( is_page_template( 'page-shop.php' ) ) {
+			/* Before widget (defined by themes). */
+			echo $before_widget;
 			/* Title of widget (before and after defined by themes). */
 			if ( $title ) {
 				echo $before_title . $title . $after_title;
@@ -587,9 +587,12 @@ class products_related_widget extends WP_Widget {
 			<?php endwhile;
 			$wp_query = $temp;
 			$temp = null;
+			/* After widget (defined by themes). */
+			echo $after_widget;
 		} else {
 			if ( 'ap_products' == get_post_type() || is_page_template( 'taxonomy-product_category.php' ) ) {
-
+				/* Before widget (defined by themes). */
+				echo $before_widget;
 				/* Title of widget (before and after defined by themes). */
 				if ( $title ) {
 					echo $before_title . $title . $after_title;
@@ -621,10 +624,10 @@ class products_related_widget extends WP_Widget {
 				<?php endwhile;
 				$wp_query = $temp;
 				$temp = null;
+				/* After widget (defined by themes). */
+				echo $after_widget;
 			}
 		}
-		/* After widget (defined by themes). */
-		echo $after_widget;
 	}
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
