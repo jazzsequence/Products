@@ -89,29 +89,31 @@ class ap_product_meta_widget extends WP_Widget {
 								$add_to_cart_path = $options['add-to-cart'];
 							}
 						break;
-					}
-
-					if ( !$is_cart66 ) {
-						$paypal_button_url = get_post_meta( $post->ID, 'paypal_button_url', true );
-						$google_button_url = get_post_meta( $post->ID, 'google_button_url', true );
-						$cart66_prod_id = get_post_meta($post->ID,'cart66_id', true);
-						switch ( $options['products-html'] ) {
-							case 'url' : // if we're using a direct url
-								if( $is_paypal && $paypal_button_url )
-									echo '<a class="nostyle" href="' . $paypal_button_url . '" title="Pay via PayPal"><img src="' . $add_to_cart_path . '" alt="Pay via PayPal" /></a>';
-								if( $is_google && $google_button_url )
-									echo '<a class="nostyle" href="' . $google_button_url . '" title="Pay via Google Wallet"><img src="' . $add_to_cart_path . '" alt="Pay via Google Wallet" /></a>';
-							break;
-							case 'html' : // if we're using an embed code
-								if( get_post_meta($post->ID,'button_html') )
-									echo get_post_meta( $post->ID, 'button_html', true );
-							break;
+					} ?>
+					<div class="purchase-button">
+						<?php
+						if ( !$is_cart66 ) {
+							$paypal_button_url = get_post_meta( $post->ID, 'paypal_button_url', true );
+							$google_button_url = get_post_meta( $post->ID, 'google_button_url', true );
+							$cart66_prod_id = get_post_meta($post->ID,'cart66_id', true);
+							switch ( $options['products-html'] ) {
+								case 'url' : // if we're using a direct url
+									if( $is_paypal && $paypal_button_url )
+										echo '<a class="nostyle" href="' . $paypal_button_url . '" title="Pay via PayPal"><img src="' . $add_to_cart_path . '" alt="Pay via PayPal" /></a>';
+									if( $is_google && $google_button_url )
+										echo '<a class="nostyle" href="' . $google_button_url . '" title="Pay via Google Wallet"><img src="' . $add_to_cart_path . '" alt="Pay via Google Wallet" /></a>';
+								break;
+								case 'html' : // if we're using an embed code
+									if( get_post_meta($post->ID,'button_html') )
+										echo get_post_meta( $post->ID, 'button_html', true );
+								break;
+							}
+						} else { // we're using cart66
+							if(get_post_meta($post->ID,'cart66_id')) // but we'll check to make sure there's a cart66 product id
+								echo do_shortcode('[add_to_cart item="' . $cart66_prod_id . '" img="' . $add_to_cart_path . '"]');
 						}
-					} else { // we're using cart66
-						if(get_post_meta($post->ID,'cart66_id')) // but we'll check to make sure there's a cart66 product id
-							echo do_shortcode('[add_to_cart item="' . $cart66_prod_id . '" img="' . $add_to_cart_path . '"]');
-					}
-				?>
+					?>
+					</div>
 				</div>
 			<?php break;
 				case 'inquire' :
