@@ -36,6 +36,7 @@ class ap_product_meta_widget extends WP_Widget {
 		$model = get_post_meta( $post->ID, 'model', true );
 		$dimensions = get_post_meta( $post->ID, 'dimensions', true );
 		$notes = get_post_meta( $post->ID, 'notes', true );
+		$inquire_link = $options['inquire-link'];
 
 		echo $before_widget;
 		// determine whether we need to display the add to cart button or not
@@ -106,7 +107,11 @@ class ap_product_meta_widget extends WP_Widget {
 				case 'inquire' :
 					// display an inquire for price ?>
 					<div class="inquire_for_price">
-						<h3>Inquire for price</h3>
+						<?php if ( $inquire_link ) { ?>
+							<h3><a href="<?php echo $inquire_link; ?>"><?php _e( 'Inquire for price', 'products'); ?></a></h3>
+						<?php } else { ?>
+							<h3><?php _e( 'Inquire for price', 'products' ); ?></h3>
+						<?php } ?>
 					</div>
 				<?php break;
 				case 'soldout' :

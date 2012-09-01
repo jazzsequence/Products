@@ -203,7 +203,8 @@ function products_get_defaults() {
 		'add-to-cart' => null,
 		'cart66_id' => '',
 		'shop-testimonials' => false,
-		'product-testimonials' => false
+		'product-testimonials' => false,
+		'inquire-link' => null
 	);
 	return $products_defaults;
 }

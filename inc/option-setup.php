@@ -187,12 +187,35 @@ function products_add_to_cart_button_display() {
 				<input id="upload_image" type="text" size="36" name="ap_products_settings[add-to-cart]" value="<?php esc_attr_e( $options['add-to-cart'] ); ?>" />
 				<input id="upload_image_button" type="button" class="button" value="<?php _e('Upload Image','products'); ?>" />
 				<br />
-				<label class="description" for="ap_products_settings[favicon]"><?php echo $help; ?></label><br />
+				<label class="description" for="ap_products_settings[add-to-cart]"><?php echo $help; ?></label><br />
 				<?php
 				if ( isset($options['add-to-cart']) && $options['add-to-cart'] != '' )
 					$add_to_cart = $options['add-to-cart'];
 				?>
 				<img src="<?php echo $add_to_cart; ?>" alt="current button image" />
+			</td>
+		</tr>
+	<?php
+}
+
+/**
+ * Inquire for price link
+ * @since 0.7
+ * @author Chris Reynolds
+ * @uses get_option
+ * @uses products_get_defaults
+ * defines a link for inquire for price (e.g. a contact page)
+ */
+function products_inquire_link_display() {
+	$defaults = products_get_defaults();
+	$options = get_option( 'ap_products_settings', $defaults );
+	$help = __( 'Defines a link for products listed as "Inquire for price" (e.g. a contact or more info page).', 'products' );
+	?>
+		<tr valign="top"><th scope="row"><?php _e( 'Inquire for price link', 'products' ); ?></th>
+			<td>
+				<input type="text" size="36" name="ap_products_settings[inquire-link]" value="<?php esc_attr_e( $options['inquire-link'] ); ?>" />
+				<br />
+				<label class="description" for="ap_products_settings[inquire-link]"><?php echo $help; ?></label>
 			</td>
 		</tr>
 	<?php
@@ -212,6 +235,7 @@ function ap_products_do_options() {
 	products_merchant_option_display();
 	products_HTML_URI_option_display();
 	products_cross_sales_option_display();
+	products_inquire_link_display();
 	products_add_to_cart_button_display();
 	products_shop_testimonials_option_display();
 	products_product_testimonials_option_display();
