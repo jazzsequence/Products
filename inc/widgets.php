@@ -453,6 +453,11 @@ class products_related_widget extends WP_Widget {
 		/* User-selected settings. */
 		$title = apply_filters('widget_title', $instance['title'] );
 		$num_posts = $instance['num_posts'];
+		$thumb_size = $instance['thumb_size'];
+
+		if ( !$thumb_size ) {
+			$thumb_size = 63;
+		}
 
 		/* Before widget (defined by themes). */
 		echo $before_widget;
@@ -478,7 +483,7 @@ class products_related_widget extends WP_Widget {
 			$wp_query = new WP_Query();
 			$wp_query->query($args);
 				while ($wp_query->have_posts()) : $wp_query->the_post(); ?>			
-					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array(63,63,true)); ?></a>
+					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array($thumb_size,$thumb_size,true)); ?></a>
 			<?php endwhile;
 			$wp_query = $temp;
 			$temp = null;
@@ -512,7 +517,7 @@ class products_related_widget extends WP_Widget {
 				$wp_query = new WP_Query();
 				$wp_query->query($args);
 					while ($wp_query->have_posts()) : $wp_query->the_post(); ?>			
-						<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array(63,63,true)); ?></a>
+						<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array($thumb_size,$thumb_size,true)); ?></a>
 				<?php endwhile;
 				$wp_query = $temp;
 				$temp = null;
@@ -527,13 +532,14 @@ class products_related_widget extends WP_Widget {
 		/* Strip tags (if needed) and update the widget settings. */
 		$instance['title'] = strip_tags( $new_instance['title'] );
 		$instance['num_posts'] = strip_tags( $new_instance['num_posts'] );
+		$instance['thumb_size'] = strip_tags( $new_instance['thumb_size'] );
 
 		return $instance;
 	}
 	function form( $instance ) {
 
 		/* Set up some default widget settings. */
-		$defaults = array( 'title' => 'You might also like:', 'num_posts' => '6' );
+		$defaults = array( 'title' => 'You might also like:', 'num_posts' => '6', 'thumb_size' => '63' );
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'products' ); ?></label>
@@ -542,6 +548,10 @@ class products_related_widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'num_posts' ); ?>"><?php _e('Number of products to show:', 'products'); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'num_posts' ); ?>" name="<?php echo $this->get_field_name( 'num_posts' ); ?>" size="3" value="<?php echo $instance['num_posts']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'thumb_size' ); ?> "><?php _e( 'Thumbnail size:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'thumb_size' ); ?>" name="<?php echo $this->get_field_name( 'thumb_size' ); ?>" size="3" value="<?php if ( !$instance['thumb_size'] ) { echo $defaults['thumb_size']; } else { echo $instance['thumb_size']; } ?>" />
 		</p>
 		<?php
 	}
