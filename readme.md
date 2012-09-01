@@ -35,6 +35,7 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 * changed cross-sales meta to store id of the cross-sales item rather than the permalink (now getting data from that post id for title & permalink)
 * fixed undefined variable issues
 * fixed if statement that wasn't allowing cross-sales items to display on products with no tags
+* added customizable thumbnail size option for related products widget
 
 ### 0.5.1
 * added related products widget
