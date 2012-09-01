@@ -27,6 +27,14 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 ### 0.7
 
 * updted note and description
+* added product info meta
+* moved cross-sales section down the page
+* added product meta widget
+* added cross-sales widget
+* created options array for inquire/sold out option
+* changed cross-sales meta to store id of the cross-sales item rather than the permalink (now getting data from that post id for title & permalink)
+* fixed undefined variable issues
+* fixed if statement that wasn't allowing cross-sales items to display on products with no tags
 
 ### 0.5.1
 * added related products widget
