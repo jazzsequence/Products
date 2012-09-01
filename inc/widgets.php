@@ -22,8 +22,9 @@ class ap_product_meta_widget extends WP_Widget {
 		/* Create the widget. */
 		$this->WP_Widget( 'product-meta', 'Product Meta', $widget_ops, $control_ops );
 	}
-	function widget() {
+	function widget($args) {
 		global $wp_query;
+		extract($args);
 		// get options
 		$options = get_option( 'ap_products_settings' );
 		$post = $wp_query->post;
@@ -164,10 +165,16 @@ class product_cross_sales_widget extends WP_Widget {
 		/* Create the widget. */
 		$this->WP_Widget( 'product-cross-sales', 'Product Cross-sales', $widget_ops, $control_ops );
 	}
-	function widget() {
+	function widget($args) {
 		global $wp_query;
+		extract($args);
 
 		$post = $wp_query->post;
+		$cross_sales_id = get_post_meta($post->ID, 'cross_sales', true);
+		$cross_sales = get_post( $cross_sales_id, ARRAY_A );
+		$cross_sales_title = $cross_sales['post_title'];
+		$cross_sales_link = get_permalink( $cross_sales_id );
+
 		// list 3 post titles related to first two tags on current post
 		$tags = wp_get_post_tags($post->ID);
 		if ($tags) {
@@ -181,14 +188,13 @@ class product_cross_sales_widget extends WP_Widget {
 				'orderby'=>'rand'
 			);
 			$tag_query = new WP_Query($args);
-			echo '<h1> fuck ' . get_post_meta($post->ID,'cross_sales',true) . '</h1>';
-			if(( $tag_query->have_posts() ) || (get_post_meta($post->ID,'cross_sales')))  {
+			//echo '<h1> fuck ' . get_post_meta($post->ID,'cross_sales',true) . '</h1>';
+			if(( $tag_query->have_posts() ) )  {
 				echo $before_widget;
 				echo __('You might be interested in', 'products') . '<br />';
-				$cross_sales = get_post_meta($post->ID, 'cross_sales', true);
-				if( $cross_sales ) {
-					echo $cross_sales;
-					//echo '<a href="' . $cross_sales_link . '">' . $cross_sales_text . '</a><br />';
+
+				if( $cross_sales_id ) {
+					echo '<a href="' . $cross_sales_link . ' rel="bookmark" title="Permanent Link to ' . $cross_sales_title . '">' . $cross_sales_title . '</a><br />';
 				}
 				while ($tag_query->have_posts()) : $tag_query->the_post(); ?>
 					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_title(); ?></a><br />
@@ -196,6 +202,14 @@ class product_cross_sales_widget extends WP_Widget {
 				wp_reset_query();
 				echo $after_widget;
 			}
+		} elseif ( !$tags && $cross_sales_id ) {
+			echo $before_widget;
+			echo __('You might be interested in', 'products') . '<br />';
+
+			if( $cross_sales_id ) {
+				echo '<a href="' . $cross_sales_link . ' rel="bookmark" title="Permanent Link to ' . $cross_sales_title . '">' . $cross_sales_title . '</a><br />';
+				}
+			echo $after_widget;
 		}
 	}
 }
