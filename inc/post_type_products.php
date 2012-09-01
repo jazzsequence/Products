@@ -107,11 +107,11 @@ function ap_products_info_meta() {
 	echo '<em>(Optional) Model name or number.</em></p>';
 
 	echo '<p><label for="dimensions"><strong>Dimensions</strong></label><br />';
-	echo '<input class="widefat" type="text" name="dimensions" value="' . get_post_meta( $post->ID, 'dimensions', true ) . '" /><br />';
+	echo '<input class="widefat" type="text" name="dimensions" value="' . esc_html( get_post_meta( $post->ID, 'dimensions', true ) ) . '" /><br />';
 	echo '<em>(Optional) Product dimensions.</em></p>';
 
 	echo '<p><label for="notes"><strong>Other notes</strong></label><br />';
-	echo '<textarea class="widefat" name="notes">' . wp_kses( get_post_meta($post->ID, 'notes', true) ) . '</textarea>';
+	echo '<textarea class="widefat" name="notes">' . wp_kses_data( get_post_meta($post->ID, 'notes', true) ) . '</textarea>';
 	echo '<em>(Optional) Any other notes or product variations.</em></p>';
 }
 
