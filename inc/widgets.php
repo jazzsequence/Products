@@ -134,7 +134,7 @@ class ap_product_meta_widget extends WP_Widget {
 								echo $price_label;
 							echo $price; ?>
 						</h3>
-						<h3><?php _e( 'Sold Out!', 'products' ); ?></h3>
+						<h3 class="sold"><?php _e( 'Sold Out!', 'products' ); ?></h3>
 					</div>
 				<?php break;
 		} // ends $inquire_sold_out switch
