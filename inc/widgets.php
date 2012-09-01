@@ -22,12 +22,20 @@ class ap_product_meta_widget extends WP_Widget {
 		/* Create the widget. */
 		$this->WP_Widget( 'product-meta', 'Product Meta', $widget_ops, $control_ops );
 	}
-	function widget($args) {
+	function widget($args, $instance) {
 		global $wp_query;
 		extract($args);
 		// get options
 		$options = get_option( 'ap_products_settings' );
 		$post = $wp_query->post;
+
+		// widget options
+		$price_label = $instance['price-label'];
+		$item_num_label = $instance['item-num-label'];
+		$brand_label = $instance['brand-label'];
+		$model_label = $instance['model-label'];
+		$dimensions_label = $instance['dimensions-label'];
+		$notes_label = $instance['notes-label'];
 
 		// product meta
 		$price = get_post_meta( $post->ID, 'price', true );
@@ -46,8 +54,10 @@ class ap_product_meta_widget extends WP_Widget {
 				// inquire for price or sold out are not set, so we're displaying the cart button ?>
 				<div class="ap_products-add_to_cart">
 				<?php
-
-					echo '<h3 itemprop="price">' . $price . '</h3>';
+					echo '<h3 itemprop="price">';
+					if ( $price_label )
+						echo $price_label;
+					echo $price . '</h3>';
 					/* 	get the appropriate add to cart button and link
 						if a custom add to cart button has been uploaded, use that, otherwise, use the default image
 					*/
@@ -117,27 +127,105 @@ class ap_product_meta_widget extends WP_Widget {
 				case 'soldout' :
 					// display a sold out ?>
 					<div class="sold_out">
-						<h3 class="strike"><?php echo $price; ?></h3>
-						<h3>Sold Out!</h3>
+						<h3 class="strike">
+							<?php if ( $price_label )
+								echo $price_label;
+							echo $price; ?>
+						</h3>
+						<h3><?php _e( 'Sold Out!', 'products' ); ?></h3>
 					</div>
 				<?php break;
 		} // ends $inquire_sold_out switch
 	?>
 	<div class="productmeta">
 		<?php if ( $item_num )
-			echo '<span itemprop="productID">' . __( 'Item: ' ) . $item_num . '</span> &bull; ';
+			echo '<span class="product-id" id="product-' . $item_num . '" itemprop="productID">';
+			if ( $item_num_label )
+				echo $item_num_label;
+			echo $item_num . '</span>';
 		if ( $model )
-			echo '<span itemprop="model">' . __( 'Model: ' ) . $model . '</span> &bull; ';
+			echo '<span class="model" id="model-' . $model . '" itemprop="model">';
+			if ( $model_label )
+				echo $model_label;
+			echo $model . '</span>';
 		if ( $brand )
-			echo '<span itemprop="brand">' . __( 'Brand: ' ) . $brand . '</span> &bull; ';
+			echo '<span class="brand" itemprop="brand">';
+			if ( $brand_label )
+				echo $brand_label;
+			echo $brand . '</span>';
 		if ( $dimensions )
-			echo __( 'Dimensions: ' ) . $dimensions . ' &bull; ';
+			echo '<span class="dimensions">';
+			if ( $dimensions_label )
+				echo $dimensions_label;
+			echo $dimensions . '</span>';
 		if ( $notes )
-			echo __( 'Notes: ' ) . $notes; ?>
+			echo '<span class="notes">';
+			if ( $notes_label )
+				echo $notes_label;
+			echo $notes . '</span>'; ?>
 	</div>
 <?php
 	wp_reset_query();
 	echo $after_widget;
+	}
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+
+		/* Strip tags (if needed) and update the widget settings. */
+
+		$instance['price-label'] = sanitize_text_field( $new_instance['price-label'] );
+		$instance['item-num-label'] = sanitize_text_field( $new_instance['item-num-label'] );
+		$instance['brand-label'] = sanitize_text_field( $new_instance['brand-label'] );
+		$instance['model-label'] = sanitize_text_field( $new_instance['model-label'] );
+		$instance['dimensions-label'] = sanitize_text_field( $new_instance['dimensions-label'] );
+		$instance['notes-label'] = sanitize_text_field( $new_instance['notes-label'] );
+
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['num_posts'] = strip_tags( $new_instance['num_posts'] );
+		$instance['thumb_size'] = strip_tags( $new_instance['thumb_size'] );
+
+		return $instance;
+	}
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array(
+			'price-label' => __( 'Price: ', 'products' ),
+			'item-num-label' => __( 'Item #: ', 'products' ),
+			'brand-label' => __( 'Brand: ', 'products' ),
+			'model-label' => __( 'Model: ', 'products' ),
+			'dimensions-label' => __( 'Dimensions: ', 'products' ),
+			'notes-label' => __( 'Notes: ', 'products' )
+		);
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'price-label' ); ?>"><?php _e( 'Price label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'price-label' ); ?>" name="<?php echo $this->get_field_name( 'price-label' ); ?>" class="widefat" value="<?php echo $instance['price-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'item-num-label' ); ?>"><?php _e( 'Item number label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'item-num-label' ); ?>" name="<?php echo $this->get_field_name( 'item-num-label' ); ?>" class="widefat" value="<?php echo $instance['item-num-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'brand-label' ); ?>"><?php _e( 'Brand label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'brand-label' ); ?>" name="<?php echo $this->get_field_name( 'brand-label' ); ?>" class="widefat" value="<?php echo $instance['brand-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'model-label' ); ?>"><?php _e( 'Model label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'model-label' ); ?>" name="<?php echo $this->get_field_name( 'model-label' ); ?>" class="widefat" value="<?php echo $instance['model-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'dimensions-label' ); ?>"><?php _e( 'Dimensions label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'dimensions-label' ); ?>" name="<?php echo $this->get_field_name( 'dimensions-label' ); ?>" class="widefat" value="<?php echo $instance['dimensions-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'notes-label' ); ?>"><?php _e( 'Notes label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'notes-label' ); ?>" name="<?php echo $this->get_field_name( 'notes-label' ); ?>" class="widefat" value="<?php echo $instance['notes-label']; ?>" />
+		</p>
+			<p>
+				<label class="description" for="product-meta"><?php _e( 'If left blank, no label will be used.', 'products' ); ?></label>
+			</p>
+		<?php
 	}
 }
 add_action( 'widgets_init', 'ap_products_meta_widget' );
