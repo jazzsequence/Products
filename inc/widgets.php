@@ -52,7 +52,7 @@ class ap_product_meta_widget extends WP_Widget {
 		switch ( $inquire_sold_out ) {
 			case 'none' :
 				// inquire for price or sold out are not set, so we're displaying the cart button ?>
-				<div class="ap_products-add_to_cart">
+				<div class="add_to_cart">
 				<?php
 					echo '<h3 itemprop="price">';
 					if ( $price_label )
