@@ -79,6 +79,12 @@ function ap_products_info_meta() {
 		echo '<p><label for="price"><strong>Price</strong></label><br />';
 		echo '<input size="5" type="text" name="price" value="' . get_post_meta( $post->ID, 'price', true ) . '" /><br />';
 		echo '<em>Item price.</em></p>';
+
+		if ( $options['members'] == true ) {
+			echo '<p><label for="member_price"><strong>Member Price</strong></label><br />';
+			echo '<input size="5" type="text" name="member_price" value="' . get_post_meta( $post->ID, 'member_price', true ) . '" /><br />';
+			echo '<em>Member price (if different).</em></p>';
+		}
 	}
 
 	echo '<p><label for="inquire-sold-out"><strong>Inquire for Price/Sold Out?</strong><label><br />';
@@ -109,6 +115,10 @@ function ap_products_info_meta() {
 	echo '<p><label for="dimensions"><strong>Dimensions</strong></label><br />';
 	echo '<input class="widefat" type="text" name="dimensions" value="' . esc_html( get_post_meta( $post->ID, 'dimensions', true ) ) . '" /><br />';
 	echo '<em>(Optional) Product dimensions.</em></p>';
+
+	echo '<p><label for="shipping_info"><strong>Shipping Information</strong></label><br />';
+	echo '<textarea class="widefat" name="shipping_info>' . wp_kses_data( get_post_meta( $post->ID, 'shipping_info', true ) ) . '</textarea>';
+	echo '<em>(Optional) Shipping information can be entered here.</em></p>';
 
 	echo '<p><label for="notes"><strong>Other notes</strong></label><br />';
 	echo '<textarea class="widefat" name="notes">' . wp_kses_data( get_post_meta($post->ID, 'notes', true) ) . '</textarea>';
