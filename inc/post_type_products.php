@@ -117,7 +117,7 @@ function ap_products_info_meta() {
 	echo '<em>(Optional) Product dimensions.</em></p>';
 
 	echo '<p><label for="shipping_info"><strong>Shipping Information</strong></label><br />';
-	echo '<textarea class="widefat" name="shipping_info>' . wp_kses_data( get_post_meta( $post->ID, 'shipping_info', true ) ) . '</textarea>';
+	echo '<textarea class="widefat" name="shipping_info">' . wp_kses_data( get_post_meta( $post->ID, 'shipping_info', true ) ) . '</textarea>';
 	echo '<em>(Optional) Shipping information can be entered here.</em></p>';
 
 	echo '<p><label for="notes"><strong>Other notes</strong></label><br />';
@@ -239,13 +239,13 @@ function meta_cpt_product() {
 				break;
 			case 'google' :
 				if ( $options['products-html'] == 'url' ) {
-					echo '<p><label for="google_button_url"><strong>Google Checkout Button URL</strong></label><br />';
+					echo '<p><label for="google_button_url"><strong>Google Wallet Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="google_button_url" value="'.get_post_meta($post->ID, 'google_button_url', true).'" /><br />';
-					echo '<em>If using Google Checkout, enter the URL for your Google Checkout button.  You can get this by going to <a href="https://checkout.google.com/sell/orders" target="_blank">My Sales</a> -> <a href="https://checkout.google.com/sell2/settings?tab=tools&pli=1" target="_blank">Tools</a> -> <a href="https://checkout.google.com/sell2/settings?section=BuyNowButton" target="_blank">Buy Now Buttons</a>, enter your information and click Create Button Code, then copy the destination URL of the generated button or open it in a new tab and copy the url of the Google Checkout page.  <span style="color: red;">Be sure to use the URL of the Google Checkout page, not the button HTML code.</em></p>';
+					echo '<em>If using Google Wallet, enter the URL for your Google Wallet button.  You can get this by going to <a href="https://checkout.google.com/sell/orders" target="_blank">My Sales</a> &rarr; <a href="https://checkout.google.com/sell2/settings?tab=tools&pli=1" target="_blank">Tools</a> &rarr; <a href="https://checkout.google.com/sell2/settings?section=BuyNowButton" target="_blank">Buy Now Buttons</a>, enter your information and click Create Button Code, then copy the destination URL of the generated button or open it in a new tab and copy the url of the Google Wallet page.  <span style="color: red;">Be sure to use the URL of the Google Wallet page, not the button HTML code.</em></p>';
 					if ( $options['members'] ) {
-						echo '<p><label for="google_button_url"><strong>Members Google Checkout Button URL</strong></label><br />';
+						echo '<p><label for="google_button_url"><strong>Members Google Wallet Button URL</strong></label><br />';
 						echo '<input style="width: 95%;" type="text" name="google_button_url_members" value="'.get_post_meta($post->ID, 'google_button_url_members', true).'" /><br />';
-						echo '<em>Enter the URL for your <strong>members</strong> Google Checkout button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
+						echo '<em>Enter the URL for your <strong>members</strong> Google Wallet button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
 					}
 				}
 			break;
@@ -256,7 +256,7 @@ function meta_cpt_product() {
 			if ( $options['members'] ) {
 				echo '<p><label for="button_html_members"><strong>Members Button HTML</strong></label><br />';
 				echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="button_html_members">' . wp_kses( get_post_meta($post->ID, 'button_html_members', true), $form_html ) . '</textarea><br />';
-				echo '<em>Enter the button code for your <strong>members</em> buy now button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
+				echo '<em>Enter the button code for your <strong>members</strong> buy now button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
 			}
 		}
     }
