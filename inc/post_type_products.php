@@ -230,19 +230,34 @@ function meta_cpt_product() {
 					echo '<p><label for="paypal_button_url"><strong>PayPal Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="paypal_button_url" value="'.get_post_meta($post->ID, 'paypal_button_url', true).'" /><br />';
 					echo '<em>If using PayPal buttons, enter the URL for your Buy Now button.  You can get this by going to <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_merchant&nav=3" target="_blank">Merchant Services</a> -> Buy Now Buttons, create your button, then click to the Email tab.  You can also go to <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_button-management" target="_blank">My Saved Buttons</a> -> View Code (under Actions) to use a previously-generated button.  <span style="color: red;">Be sure to use the Email URL only, not the full button HTML code.</span></em></p>';
+					if ( $options['members'] ) {
+						echo '<p><label for="paypal_button_url_members"><strong>Members PayPal Button URL</strong></label><br />';
+						echo '<input style="width: 95%;" type="text" name="paypal_button_url_members" value="'.get_post_meta($post->ID, 'paypal_button_url_members', true).'" /><br />';
+						echo '<em>Enter the URL for your <strong>members</strong> Buy Now button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
+					}
 				}
 				break;
 			case 'google' :
 				if ( $options['products-html'] == 'url' ) {
 					echo '<p><label for="google_button_url"><strong>Google Checkout Button URL</strong></label><br />';
 					echo '<input style="width: 95%;" type="text" name="google_button_url" value="'.get_post_meta($post->ID, 'google_button_url', true).'" /><br />';
-					echo '<em>If using Google Checkout, enter the URL for your Google Checkout button.  You can get this by going to <a href="https://checkout.google.com/sell/orders" target="_blank">My Sales</a> -> <a href="https://checkout.google.com/sell2/settings?tab=tools&pli=1" target="_blank">Tools</a> -> <a href="https://checkout.google.com/sell2/settings?section=BuyNowButton" target="_blank">Buy Now Buttons</a>, enter your information and click Create Button Code, then copy the destination URL of the generated button or open it in a new tab and copy the url of the Google Checkout page.  <span style="color: red;">Be sure to use the URL of the Google Checkout page, not the button HTML code.</em><br /><br />';
+					echo '<em>If using Google Checkout, enter the URL for your Google Checkout button.  You can get this by going to <a href="https://checkout.google.com/sell/orders" target="_blank">My Sales</a> -> <a href="https://checkout.google.com/sell2/settings?tab=tools&pli=1" target="_blank">Tools</a> -> <a href="https://checkout.google.com/sell2/settings?section=BuyNowButton" target="_blank">Buy Now Buttons</a>, enter your information and click Create Button Code, then copy the destination URL of the generated button or open it in a new tab and copy the url of the Google Checkout page.  <span style="color: red;">Be sure to use the URL of the Google Checkout page, not the button HTML code.</em></p>';
+					if ( $options['members'] ) {
+						echo '<p><label for="google_button_url"><strong>Members Google Checkout Button URL</strong></label><br />';
+						echo '<input style="width: 95%;" type="text" name="google_button_url_members" value="'.get_post_meta($post->ID, 'google_button_url_members', true).'" /><br />';
+						echo '<em>Enter the URL for your <strong>members</strong> Google Checkout button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
+					}
 				}
 			break;
     	}
     	if ( $options['products-html'] == 'html' && $options['products-merchant'] != 'cart66' ) {
 			echo '<p><label for="button_html"><strong>Button HTML</strong></label><br />';
 			echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="button_html">' . wp_kses( get_post_meta($post->ID, 'button_html', true), $form_html ) . '</textarea>';
+			if ( $options['members'] ) {
+				echo '<p><label for="button_html_members"><strong>Members Button HTML</strong></label><br />';
+				echo '<textarea style="width: 55%; height: 100px; font-family: monospace;" name="button_html_members">' . wp_kses( get_post_meta($post->ID, 'button_html_members', true), $form_html ) . '</textarea><br />';
+				echo '<em>Enter the button code for your <strong>members</em> buy now button.  This should be a unique button with a different price for members/logged-in users.</em></p>';
+			}
 		}
     }
 	if ( $options['product-testimonials'] ) {

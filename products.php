@@ -241,8 +241,11 @@ function ap_products_insert_post_data($data,$postarr) {
 	if ( $postarr['post_type'] == 'ap_products' ) {
 		update_post_meta($postarr['ID'], 'cart66_id', $postarr['cart66_id']);
 		update_post_meta($postarr['ID'], 'paypal_button_url', $postarr['paypal_button_url']);
+		update_post_meta($postarr['ID'], 'paypal_button_url_members', $postarr['paypal_button_url_members']);
 		update_post_meta($postarr['ID'], 'google_button_url', $postarr['google_button_url']);
+		update_post_meta($postarr['ID'], 'google_button_url_members', $postarr['google_button_url_members']);
 		update_post_meta($postarr['ID'], 'button_html', $postarr['button_html']);
+		update_post_meta($postarr['ID'], 'button_html_members', $postarr['button_html_members']);
 		update_post_meta($postarr['ID'], 'cross_sales', $postarr['cross_sales']);
 		update_post_meta($postarr['ID'], 'testimonials', $postarr['testimonials']);
 		update_post_meta($postarr['ID'], 'testimonial_author', $postarr['testimonial_author']);
