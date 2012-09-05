@@ -46,7 +46,6 @@ class ap_product_meta_widget extends WP_Widget {
 		$notes = get_post_meta( $post->ID, 'notes', true );
 		$inquire_link = $options['inquire-link'];
 
-		echo $before_widget;
 		// determine whether we need to display the add to cart button or not
 		$inquire_sold_out = get_post_meta( $post->ID, 'inquire-sold-out', true );
 		switch ( $inquire_sold_out ) {
@@ -139,41 +138,47 @@ class ap_product_meta_widget extends WP_Widget {
 				<?php break;
 		} // ends $inquire_sold_out switch
 	?>
-	<div class="productmeta">
-		<?php if ( $item_num ) {
-			echo '<span class="product-id" id="product-' . $item_num . '" itemprop="productID">';
-			if ( $item_num_label )
-				echo $item_num_label;
-			echo $item_num . '</span>';
+	<?php if ( ($price) || ($item_num) || ($brand) || ($model) || ($dimensions) || ($notes) || ($inquire_link) ) { ?>
+			<section class="product-info" id="meta">
+				<?php echo $before_widget; ?>
+				<div class="productmeta">
+					<?php if ( $item_num ) {
+						echo '<span class="product-id" id="product-' . $item_num . '" itemprop="productID">';
+						if ( $item_num_label )
+							echo $item_num_label;
+						echo $item_num . '</span>';
+					}
+					if ( $model ) {
+						echo '<span class="model" id="model-' . $model . '" itemprop="model">';
+						if ( $model_label )
+							echo $model_label;
+						echo $model . '</span>';
+					}
+					if ( $brand ) {
+						echo '<span class="brand" itemprop="brand">';
+						if ( $brand_label )
+							echo $brand_label;
+						echo $brand . '</span>';
+					}
+					if ( $dimensions ) {
+						echo '<span class="dimensions">';
+						if ( $dimensions_label )
+							echo $dimensions_label;
+						echo $dimensions . '</span>';
+					}
+					if ( $notes ) {
+						echo '<span class="notes">';
+						if ( $notes_label )
+							echo $notes_label;
+						echo $notes . '</span>';
+					}?>
+				</div>
+				<div class="clear"></div>
+			</section>
+			<?php
+			wp_reset_query();
+			echo $after_widget;
 		}
-		if ( $model ) {
-			echo '<span class="model" id="model-' . $model . '" itemprop="model">';
-			if ( $model_label )
-				echo $model_label;
-			echo $model . '</span>';
-		}
-		if ( $brand ) {
-			echo '<span class="brand" itemprop="brand">';
-			if ( $brand_label )
-				echo $brand_label;
-			echo $brand . '</span>';
-		}
-		if ( $dimensions ) {
-			echo '<span class="dimensions">';
-			if ( $dimensions_label )
-				echo $dimensions_label;
-			echo $dimensions . '</span>';
-		}
-		if ( $notes ) {
-			echo '<span class="notes">';
-			if ( $notes_label )
-				echo $notes_label;
-			echo $notes . '</span>';
-		}?>
-	</div>
-<?php
-	wp_reset_query();
-	echo $after_widget;
 	}
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
