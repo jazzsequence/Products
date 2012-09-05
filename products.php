@@ -204,7 +204,8 @@ function products_get_defaults() {
 		'cart66_id' => '',
 		'shop-testimonials' => false,
 		'product-testimonials' => false,
-		'inquire-link' => null
+		'inquire-link' => null,
+		'members' => false
 	);
 	return $products_defaults;
 }
