@@ -101,6 +101,37 @@ function products_cross_sales_option_display() {
 	</tr>
 	<?php
 }
+
+/**
+ * Members options setting
+ * option to allow different options if users are logged in
+ * @author Chris Reynolds
+ * @since 0.7
+ * @uses products_true_false
+ * @uses products_get_defaults
+ */
+function products_members_option_display() {
+	$defaults = products_get_defaults();
+	$options = get_option( 'ap_products_settings', $defaults );
+	?>
+	<tr valign="top"><th scope="row"><?php _e( 'Activate members?', 'products' ); ?></th>
+		<td>
+			<select name="ap_products_settings[members]">
+			<?php
+				$selected = $options['members'];
+				$help = __( 'If enabled, will display alternate prices and buttons for logged-in users.', 'products' );
+				foreach ( products_true_false() as $option ) {
+					$label = $option['label'];
+					$value = $option['value'];
+					echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+				} ?>
+			</select><br />
+			<label class="description" for="ap_products_settings[members]"><?php echo $help; ?></label>
+		</td>
+	</tr>
+	<?php
+}
+
 /**
  * Shop testimonials option
  * @since 0.5
@@ -234,6 +265,7 @@ function ap_products_do_options() {
 	echo $options_before;
 	products_merchant_option_display();
 	products_HTML_URI_option_display();
+	products_members_option_display();
 	products_cross_sales_option_display();
 	products_inquire_link_display();
 	products_add_to_cart_button_display();
