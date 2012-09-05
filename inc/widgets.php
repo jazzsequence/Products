@@ -36,6 +36,7 @@ class ap_product_meta_widget extends WP_Widget {
 		$model_label = $instance['model-label'];
 		$dimensions_label = $instance['dimensions-label'];
 		$notes_label = $instance['notes-label'];
+		$shipping_info_label = $instance['shipping-info-label'];
 
 		// product meta
 		$price = get_post_meta( $post->ID, 'price', true );
@@ -44,6 +45,9 @@ class ap_product_meta_widget extends WP_Widget {
 		$model = get_post_meta( $post->ID, 'model', true );
 		$dimensions = get_post_meta( $post->ID, 'dimensions', true );
 		$notes = get_post_meta( $post->ID, 'notes', true );
+		$shipping_info = get_post_meta( $post->ID, 'shipping_info', true );
+		$member_price = get_post_meta( $post->ID, 'member_price', true );
+		$is_members_active = $options['members'];
 		$inquire_link = $options['inquire-link'];
 
 		// determine whether we need to display the add to cart button or not
@@ -56,6 +60,9 @@ class ap_product_meta_widget extends WP_Widget {
 					echo '<h3 itemprop="price">';
 					if ( $price_label )
 						echo $price_label;
+					if ( $is_members_active && is_user_logged_in() ) {
+						$price = $member_price;
+					}
 					echo $price . '</h3>';
 					/* 	get the appropriate add to cart button and link
 						if a custom add to cart button has been uploaded, use that, otherwise, use the default image
@@ -93,18 +100,35 @@ class ap_product_meta_widget extends WP_Widget {
 						<?php
 						if ( !$is_cart66 ) {
 							$paypal_button_url = get_post_meta( $post->ID, 'paypal_button_url', true );
+							$paypal_button_url_members = get_post_meta( $post->ID, 'paypal_button_url_members', true );
 							$google_button_url = get_post_meta( $post->ID, 'google_button_url', true );
+							$google_button_url_members = get_post_meta( $post->ID, 'google_button_url_members', true );
 							$cart66_prod_id = get_post_meta($post->ID,'cart66_id', true);
 							switch ( $options['products-html'] ) {
 								case 'url' : // if we're using a direct url
-									if( $is_paypal && $paypal_button_url )
-										echo '<a class="nostyle" href="' . $paypal_button_url . '" title="Pay via PayPal"><img src="' . $add_to_cart_path . '" alt="Pay via PayPal" /></a>';
-									if( $is_google && $google_button_url )
-										echo '<a class="nostyle" href="' . $google_button_url . '" title="Pay via Google Wallet"><img src="' . $add_to_cart_path . '" alt="Pay via Google Wallet" /></a>';
+									if( $is_paypal && $paypal_button_url ) {
+										if ( $paypal_button_url_members && is_user_logged_in() ) {
+											echo '<a class="nostyle" href="' . $paypal_button_url_members . '" title="Pay via PayPal"><img src="' . $add_to_cart_path . '" alt="Pay via PayPal" /></a>';
+										} else {
+											echo '<a class="nostyle" href="' . $paypal_button_url . '" title="Pay via PayPal"><img src="' . $add_to_cart_path . '" alt="Pay via PayPal" /></a>';
+										}
+									}
+									if( $is_google && $google_button_url ) {
+										if ( $google_button_url_members && is_user_logged_in() ) {
+											echo '<a class="nostyle" href="' . $google_button_url_members . '" title="Pay via Google Wallet"><img src="' . $add_to_cart_path . '" alt="Pay via Google Wallet" /></a>';
+										} else {
+											echo '<a class="nostyle" href="' . $google_button_url . '" title="Pay via Google Wallet"><img src="' . $add_to_cart_path . '" alt="Pay via Google Wallet" /></a>';
+										}
+									}
 								break;
 								case 'html' : // if we're using an embed code
-									if( get_post_meta($post->ID,'button_html') )
-										echo get_post_meta( $post->ID, 'button_html', true );
+									$button_html = get_post_meta( $post->ID, 'button_html', true );
+									$button_html_members = get_post_meta( $post->ID, 'button_html_members', true );
+									if( $button_html_members && is_user_logged_in() ) {
+										echo $button_html_members;
+									} elseif ( $button_html ) {
+										echo $button_html;
+									}
 								break;
 							}
 						} else { // we're using cart66
@@ -138,7 +162,7 @@ class ap_product_meta_widget extends WP_Widget {
 				<?php break;
 		} // ends $inquire_sold_out switch
 	?>
-	<?php if ( ($price) || ($item_num) || ($brand) || ($model) || ($dimensions) || ($notes) || ($inquire_link) ) { ?>
+	<?php if ( ($price) || ($item_num) || ($brand) || ($model) || ($dimensions) || ($notes) || ($inquire_link) || ($shipping_info) ) { ?>
 			<section class="product-info" id="meta">
 				<?php echo $before_widget; ?>
 				<div class="productmeta">
@@ -171,6 +195,11 @@ class ap_product_meta_widget extends WP_Widget {
 						if ( $notes_label )
 							echo $notes_label;
 						echo $notes . '</span>';
+					}
+					if ( $shipping_info ) {
+						if ( $shipping_info_label )
+							echo $shipping_info_label;
+						echo $shipping_info;
 					}?>
 				</div>
 				<div class="clear"></div>
@@ -207,7 +236,8 @@ class ap_product_meta_widget extends WP_Widget {
 			'brand-label' => __( 'Brand: ', 'products' ),
 			'model-label' => __( 'Model: ', 'products' ),
 			'dimensions-label' => __( 'Dimensions: ', 'products' ),
-			'notes-label' => __( 'Notes: ', 'products' )
+			'notes-label' => __( 'Notes: ', 'products' ),
+			'shipping-info-label' => __( 'Shipping Info: ', 'products' )
 		);
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		<p>
@@ -233,6 +263,10 @@ class ap_product_meta_widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'notes-label' ); ?>"><?php _e( 'Notes label:', 'products' ); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'notes-label' ); ?>" name="<?php echo $this->get_field_name( 'notes-label' ); ?>" class="widefat" value="<?php echo $instance['notes-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'shipping-info-label' ); ?>"><?php _e( 'Shipping Info label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'shipping-info-label' ); ?>" name="<?php echo $this->get_field_name( 'shipping-info-label' ); ?>" class="widefat" value="<?php echo $instance['shipping-info-label']; ?>" />
 		</p>
 			<p>
 				<label class="description" for="product-meta"><?php _e( 'If left blank, no label will be used.', 'products' ); ?></label>
@@ -270,7 +304,7 @@ class product_cross_sales_widget extends WP_Widget {
 		/* Create the widget. */
 		$this->WP_Widget( 'product-cross-sales', 'Product Cross-sales', $widget_ops, $control_ops );
 	}
-	function widget($args) {
+	function widget($args, $instance) {
 		global $wp_query;
 		extract($args);
 
@@ -282,6 +316,12 @@ class product_cross_sales_widget extends WP_Widget {
 
 		// list 3 post titles related to first two tags on current post
 		$tags = wp_get_post_tags($post->ID);
+
+		if ( $instance['related-label'] ) {
+			$related_label = $instance['related-label'];
+		} else {
+			$related_label = __('You might be interested in', 'products');
+		}
 		if ($tags) {
 			$first_tag = $tags[0]->term_id;
 			$second_tag = $tags[1]->term_id;
@@ -296,7 +336,7 @@ class product_cross_sales_widget extends WP_Widget {
 			//echo '<h1> fuck ' . get_post_meta($post->ID,'cross_sales',true) . '</h1>';
 			if(( $tag_query->have_posts() ) )  {
 				echo $before_widget;
-				echo __('You might be interested in', 'products') . '<br />';
+				echo $related_label . '<br />';
 
 				if( $cross_sales_id ) {
 					echo '<a href="' . $cross_sales_link . ' rel="bookmark" title="Permanent Link to ' . $cross_sales_title . '">' . $cross_sales_title . '</a><br />';
@@ -309,13 +349,33 @@ class product_cross_sales_widget extends WP_Widget {
 			}
 		} elseif ( !$tags && $cross_sales_id ) {
 			echo $before_widget;
-			echo __('You might be interested in', 'products') . '<br />';
+			echo $related_label . '<br />';
 
 			if( $cross_sales_id ) {
 				echo '<a href="' . $cross_sales_link . ' rel="bookmark" title="Permanent Link to ' . $cross_sales_title . '">' . $cross_sales_title . '</a><br />';
 				}
 			echo $after_widget;
 		}
+	}
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+
+		/* Strip tags (if needed) and update the widget settings. */
+		$instance['related-label'] = sanitize_text_field( $new_instance['related-label'] );
+
+		return $instance;
+	}
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array( 'related-label' => __( 'You might be interested in', 'products' ) );
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'related-label' ); ?>"><?php _e( 'Cross-sales label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'related-label' ); ?>" name="<?php echo $this->get_field_name( 'related-label' ); ?>" class="widefat" value="<?php if ( !$instance['related-label'] ) { echo $defaults['related-label']; } else { echo $instance['related-label']; } ?>" /><br />
+			<label class="description" for="<?php echo $this->get_field_id( 'related-label' ); ?>"><?php _e( 'Text to display above cross-sales items.', 'products' ); ?></label>
+		</p>
+		<?php
 	}
 }
 
