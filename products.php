@@ -253,6 +253,7 @@ function ap_products_insert_post_data($data,$postarr) {
 		update_post_meta($postarr['ID'], 'testimonial_author_website_url', $postarr['testimonial_author_website_url']);
 		update_post_meta($postarr['ID'], 'price', $postarr['price']);
 		update_post_meta($postarr['ID'], 'member_price', $postarr['member_price']);
+		update_post_meta($postarr['ID'], 'member_only', $postarr['member_only']);
 		update_post_meta($postarr['ID'], 'inquire-sold-out', $postarr['inquire-sold-out']);
 		update_post_meta($postarr['ID'], 'item_num', $postarr['item_num']);
 		update_post_meta($postarr['ID'], 'brand', $postarr['brand']);

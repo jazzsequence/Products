@@ -84,6 +84,17 @@ function ap_products_info_meta() {
 			echo '<p><label for="member_price"><strong>Member Price</strong></label><br />';
 			echo '<input size="5" type="text" name="member_price" value="' . get_post_meta( $post->ID, 'member_price', true ) . '" /><br />';
 			echo '<em>Member price (if different).</em></p>';
+
+			echo '<p><label for="member_only"><strong>Member Only?</strong></label><br />';
+			echo '<select name="member_only">';
+			$selected = get_post_meta( $post->ID, 'member_only', true );
+			foreach ( products_true_false() as $option ) {
+				$label = $option['label'];
+				$value = $option['value'];
+				echo '<option value="' . $value . '" ' . selected( $selected, $value ) . '>' . $label . '</option>';
+			}
+			echo '</select><br />';
+			echo '<em>Select Yes to make this product visible only to logged-in users.</em></p>';
 		}
 	}
 
