@@ -210,6 +210,9 @@ function products_add_to_cart_button_display() {
 		if ( $options['products-merchant'] == 'cart66' ) {
 			$add_to_cart = product_plugin_images . 'add-to-cart.png';
 		}
+		if ( $options['products-merchant'] == 'ejunkie' ) {
+			$add_to_cart = 'https://www.e-junkie.com/ej/ej_add_to_cart.gif';
+		}
 	}
 	$help = __( 'Use the uploader to upload a PNG, JPG, or GIF file to use as an add to cart button.  If no image is specified, the default will be used.', 'products' )
 	?>
