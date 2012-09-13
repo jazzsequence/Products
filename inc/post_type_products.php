@@ -49,16 +49,23 @@ function post_type_products() {
 add_action( 'init', 'post_type_products', 0 );
 
 /**
- * Product info meta boxes
+ * Product meta boxes
  * @author Chris Reynolds
  * @since 0.7
  * @uses add_meta_box
- * adds additional meta information for products.  All this stuff is optional but can be used for schema.org schemas
+ * loads all the meta boxes in one place
+ * adds additional meta information for products.  
  */
-function ap_products_info_metaboxes() {
-	add_meta_box( "product-meta", "Product Information", "ap_products_info_meta", "ap_products", "side", "core");
+function ap_products_metaboxes() {
+	$options = get_option( 'ap_products_settings' );
+	add_meta_box( "product-meta", "Product Information", "ap_products_info_meta", "ap_products", "side", "core" );
+	add_meta_box( "product-details", "Product Details", "ap_products_sales_meta", "ap_products", "normal", "low" );
+	// don't display the testimonials meta box if testimonials are not active
+	if ( $options['product-testimonials'] ) {
+		add_meta_box( "product-testimonials", "Product Testimonial", "ap_products_testimonials_meta", "ap_products", "normal", "low");
+	}
 }
-add_action( 'admin_menu', 'ap_products_info_metaboxes' );
+add_action( 'admin_menu', 'ap_products_metaboxes' );
 
 /**
  * Product Meta
@@ -66,7 +73,7 @@ add_action( 'admin_menu', 'ap_products_info_metaboxes' );
  * @since 0.7
  * @uses wp_create_nonce
  * @uses get_post_meta
- * creates the actual meta fields on the product pages
+ * creates the actual meta fields on the product pages. All this stuff is optional but can be used for schema.org schemas
  */
 function ap_products_info_meta() {
 	global $post;
@@ -137,20 +144,6 @@ function ap_products_info_meta() {
 }
 
 /**
- * Main meta boxes
- * adds some custom meta boxes.  This just declares the meta boxes and the function to handle them
- * @author Chris Reynolds
- * @since 0.1
- * @uses add_meta_box
- * p.s. meta boxes are aw3x0m3
- */
-function custom_meta_boxes_products() {
-	// let's create some meta boxes
-    add_meta_box("product-details", "Product Details", "meta_cpt_product", "ap_products", "normal", "low");
-}
-add_action('admin_menu', 'custom_meta_boxes_products');
-
-/**
  * Meta CPT Product
  * this actually handles how the meta boxes will appear on the Edit Product pages
  * @author Chris Reynolds
@@ -158,7 +151,7 @@ add_action('admin_menu', 'custom_meta_boxes_products');
  * @uses wp_create_nonce
  * @uses get_post_meta
  */
-function meta_cpt_product() {
+function ap_products_sales_meta() {
     global $post;
 
     //$defaults = products_get_defaults();
@@ -260,6 +253,18 @@ function meta_cpt_product() {
 					}
 				}
 			break;
+			case 'ejunkie' :
+				if ( $options['products-html'] == 'url' ) {
+					echo '<p><label for="ejunkie_button_url"><strong>E-junkie product URL</strong></label><br />';
+					echo '<input style="width: 95%;" type="text" name="ejunkie_button_url" value="'.get_post_meta($post->ID, 'ejunkie_button_url', true).'" /><br />';
+					echo '<em>If using E-junkie, enter the URL for your E-junkie product.  You can get this by copying the URL in your E-junkie embed code. (e.g. if your code was: <code>&lt;a href="https://www.e-junkie.com/ecom/gb.php?c=cart&i=12345&cl=12345&ejc=2" target="ej_ejc" class="ec_ejc_thkbx" onClick="javascript:return EJEJC_lc(this);"&gt;&lt;img src="http://www.e-junkie.com/ej/ej_add_to_cart.gif" border="0" alt="Add to Cart"/&gt;&lt;/a&gt;</code> then your E-junkie URL would be <code>https://www.e-junkie.com/ecom/gb.php?c=cart&i=12345&cl=12345</code>.</em></p>';
+					if ( $options['members'] ) {
+						echo '<p><label for="ejunkie_button_url"><strong>Members E-junkie product URL</strong></label><br />';
+						echo '<input style="width: 95%;" type="text" name="google_button_url_members" value="'.get_post_meta($post->ID, 'ejunkie_button_url_members', true).'" /><br />';
+						echo '<em>Enter the URL for your <strong>members</strong> E-junkie product.  This should be a unique button with a different price for members/logged-in users.</em></p>';
+					}
+				}
+			break;
     	}
     	if ( $options['products-html'] == 'html' && $options['products-merchant'] != 'cart66' ) {
 			echo '<p><label for="button_html"><strong>Button HTML</strong></label><br />';
@@ -271,22 +276,6 @@ function meta_cpt_product() {
 			}
 		}
     }
-	if ( $options['product-testimonials'] ) {
-		echo '<p><label for="testimonials"><strong>Product testimonials</strong></label><br />';
-		wp_editor( get_post_meta( $post->ID, 'testimonials', true ), 'testimonials', array( 'textarea_rows' => 5 ) );
-		echo '<em>To be displayed in the sidebar on the product page.  If left blank, shop testimonials will be used instead (if any exist).</em></p>';
-		echo '<p><label for="testimonial_author"><strong>Testimonial Author</strong></label><br />';
-		echo '<input class="widefat" type="text" name="testimonial_author" value="' . get_post_meta( $post->ID, 'testimonial_author', true ) . '" /><br />';
-		echo '<em>The testimonial author\'s name.</em></p>';
-
-		echo '<p><label for="testimonial_author_website"><strong>Author\'s Website Name</strong></label><br />';
-		echo '<input class="widefat" type="text" name="testimonial_author_website" value="' . get_post_meta( $post->ID, 'testimonial_author_website', true ) . '" /><br />';
-		echo '<em>(Optional) If not blank, will display author\'s website under his/her name.</em></p>';
-
-		echo '<p><label for="testimonial_author_website_url"><strong>Author\'s Website URL</strong></label><br />';
-		echo '<input class="widefat" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
-		echo '<em>(Optional) If not blank, will link website name to author\'s website.</em></p>';
-	}
     if ( $options['cross-sales'] ) {
 		echo '<p><label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
 	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
@@ -309,8 +298,31 @@ function meta_cpt_product() {
 			wp_reset_query();?>
 	  	</select><br />
 	  	<?php
-		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</p>';
+		echo '<em>Select the item you would like to feature for cross-sales on this product\'s page by choosing from the list above.</em></p>';
 	}
+}
+/**
+ * Product testimonial meta boxe
+ * adds a product testimonial metabox.
+ * @author Chris Reynolds
+ * @since 0.1
+ * @uses wp_create_nonce
+ * @uses get_post_meta
+ */
+function ap_products_testimonials_meta() {
+	wp_editor( get_post_meta( $post->ID, 'testimonials', true ), 'testimonials', array( 'textarea_rows' => 5 ) );
+	echo '<em>To be displayed in the sidebar on the product page.  If left blank, shop testimonials will be used instead (if any exist).  If multiple testimonials are desired, leave the Author and Website fields blank and enter that information into the editor above.</em></p>';
+	echo '<p><label for="testimonial_author"><strong>Testimonial Author</strong></label><br />';
+	echo '<input class="widefat" type="text" name="testimonial_author" value="' . get_post_meta( $post->ID, 'testimonial_author', true ) . '" /><br />';
+	echo '<em>The testimonial author\'s name.</em></p>';
+
+	echo '<p><label for="testimonial_author_website"><strong>Author\'s Website Name</strong></label><br />';
+	echo '<input class="widefat" type="text" name="testimonial_author_website" value="' . get_post_meta( $post->ID, 'testimonial_author_website', true ) . '" /><br />';
+	echo '<em>(Optional) If not blank, will display author\'s website under his/her name.</em></p>';
+
+	echo '<p><label for="testimonial_author_website_url"><strong>Author\'s Website URL</strong></label><br />';
+	echo '<input class="widefat" type="text" name="testimonial_author_website_url" value="' . get_post_meta( $post->ID, 'testimonial_author_website_url', true ) . '" /><br />';
+	echo '<em>(Optional) If not blank, will link website name to author\'s website.</em></p>';
 }
 
 /**
