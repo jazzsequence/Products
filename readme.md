@@ -4,7 +4,7 @@ Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id
 Tags: e-commerce, custom post types, products  
 Requires at least: 2.9  
 Tested up to: 3.4.1  
-Stable tag: 0.8  
+Stable tag: 0.8.1  
 
 A simple shop plugin based on custom post types with integrated support for Cart66
 
@@ -23,6 +23,11 @@ It might bear reiterating that any time a plugin tries to make assumptions abou
 Extract the zip file and just drop the contents in the `wp-content/plugins/` directory of your WordPress installation and then activate the Plugin from Plugins page.
 
 ## Changelog
+
+### 0.8.1
+
+* added css classes to testimonials for styling
+* replaced textarea boxes with wp_editor boxes for shipping and more info and moved them to product details metabox
 
 ### 0.8
 
