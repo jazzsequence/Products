@@ -24,6 +24,12 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 ## Changelog
 
+### 0.8
+
+* added ejunkie merchant option
+* moved all add_meta_box calls into one function to simplify the code
+* split product testimonials into its' own meta box
+
 ### 0.7
 
 * updted note and description
@@ -36,6 +42,19 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 * fixed undefined variable issues
 * fixed if statement that wasn't allowing cross-sales items to display on products with no tags
 * added customizable thumbnail size option for related products widget
+* added inquire for price link option
+* added widget options to define labels for product meta
+* fixed if statements
+* removed prefix from add_to_cart css class
+* added a css class around the payment button
+* changed sanitization
+* added css class to sold out h3 tag
+* moved before/after widget output to inside the if statement for related products
+* added member (logged in user) functionality
+* added shipping info meta field
+* fixed an unclosed quote
+* changed "Google Checkout" to "Google Wallet"
+
 
 ### 0.5.1
 * added related products widget
