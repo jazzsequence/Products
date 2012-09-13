@@ -58,7 +58,7 @@ add_action( 'init', 'post_type_products', 0 );
  */
 function ap_products_metaboxes() {
 	$options = get_option( 'ap_products_settings' );
-	add_meta_box( "product-meta", "Product Information", "ap_products_info_meta", "ap_products", "side", "core" );
+	add_meta_box( "product-meta", "Product Information", "ap_products_info_meta", "ap_products", "side", "high" );
 	add_meta_box( "product-details", "Product Details", "ap_products_sales_meta", "ap_products", "normal", "low" );
 	// don't display the testimonials meta box if testimonials are not active
 	if ( $options['product-testimonials'] ) {
@@ -133,14 +133,6 @@ function ap_products_info_meta() {
 	echo '<p><label for="dimensions"><strong>Dimensions</strong></label><br />';
 	echo '<input class="widefat" type="text" name="dimensions" value="' . esc_html( get_post_meta( $post->ID, 'dimensions', true ) ) . '" /><br />';
 	echo '<em>(Optional) Product dimensions.</em></p>';
-
-	echo '<p><label for="shipping_info"><strong>Shipping Information</strong></label><br />';
-	echo '<textarea class="widefat" name="shipping_info">' . wp_kses_data( get_post_meta( $post->ID, 'shipping_info', true ) ) . '</textarea>';
-	echo '<em>(Optional) Shipping information can be entered here.</em></p>';
-
-	echo '<p><label for="notes"><strong>Other notes</strong></label><br />';
-	echo '<textarea class="widefat" name="notes">' . wp_kses_data( get_post_meta($post->ID, 'notes', true) ) . '</textarea>';
-	echo '<em>(Optional) Any other notes or product variations.</em></p>';
 }
 
 /**
@@ -276,6 +268,13 @@ function ap_products_sales_meta() {
 			}
 		}
     }
+	echo '<label for="shipping_info"><strong>Shipping Information</strong></label>';
+	wp_editor( wp_kses_data( get_post_meta( $post->ID, 'shipping_info', true ) ), 'shipping_info', array('media_buttons' => false, 'textarea_rows' => 5, 'editor_class' => 'widefat', 'teeny' => true, 'editor_css' => '<style type="text/css">html .mceIframeContainer { background: #fff; }</style>') );
+	echo '<p><em>(Optional) Shipping information can be entered here.</em></p>';
+
+	echo '<label for="notes"><strong>Other notes</strong></label>';
+	wp_editor( wp_kses_data( get_post_meta($post->ID, 'notes', true) ), 'notes', array('media_buttons' => false, 'textarea_rows' => 5, 'editor_class' => 'widefat', 'teeny' => true) );
+	echo '<p><em>(Optional) Any other notes or product variations.</em></p>';
     if ( $options['cross-sales'] ) {
 		echo '<p><label for="cross_sales"><strong>Cross-sales item</strong></label><br />';
 	    $cross_sales_selected = get_post_meta( $post->ID, 'cross_sales', true );
