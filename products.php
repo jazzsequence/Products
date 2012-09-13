@@ -142,6 +142,10 @@ function products_merchant_options() {
 		'paypal' => array(
 			'value' => 'paypal',
 			'label' => __( 'PayPal Standard', 'products' )
+		),
+		'ejunkie' => array(
+			'value' => 'ejunkie',
+			'label' => __( 'E-junkie', 'products' )
 		)
 	);
 	return $products_merchant;
