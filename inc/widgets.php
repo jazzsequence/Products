@@ -439,7 +439,7 @@ class product_testimonials_widget extends WP_Widget {
 				$testimonial_author_website = null;
 				$testimonial_author_website_url = null;
 				$source = __('anonymous','products');
-				$testimonial_author = '<span itemprop="author">' . get_post_meta( $post->ID, 'testimonial_author', true ) . '</span>';
+				$testimonial_author = '<span itemprop="author" class="author">' . get_post_meta( $post->ID, 'testimonial_author', true ) . '</span>';
 				if ( get_post_meta( $post->ID, 'testimonial_author_website' ) )
 					$testimonial_author_website = get_post_meta( $post->ID, 'testimonial_author_website', true );
 				if ( get_post_meta( $post->ID, 'testimonial_author_website_url' ) )
@@ -465,7 +465,7 @@ class product_testimonials_widget extends WP_Widget {
 
 			/* Display quote from widget settings. */ ?>
 			<aside class="testimonial" itemprop="review" itemscope itemtype="http://schema.org/Review">
-				<span itemprop="description">
+				<span itemprop="description" class="description">
 					<?php echo $testimonial; ?>
 				</span>
 				<?php if ( $source ) { echo '<div class="source">' . $source . '</div>'; } ?>
@@ -488,22 +488,24 @@ class product_testimonials_widget extends WP_Widget {
 				$wp_query = new WP_Query();
 				$wp_query->query($args);
 
-				/* Title of widget (before and after defined by themes). */
-				if ( $title ) {
-					echo $before_title . $title . $after_title;
-				} else {
-					echo $before_title . __( 'Testimonials', 'products' ) . $after_title;
-				}
+				echo $before_widget;
+
+				if ($wp_query->have_posts() ) :
+					/* Title of widget (before and after defined by themes). */
+					if ( $title ) {
+						echo $before_title . $title . $after_title;
+					} else {
+						echo $before_title . __( 'Testimonials', 'products' ) . $after_title;
+					}
 
 				while ($wp_query->have_posts()) :
 				/* Before widget (defined by themes). */
-				echo $before_widget;
 
 				$wp_query->the_post();
 				$testimonial_author_website = null;
 				$testimonial_author_website_url = null;
 				$source = __('anonymous','products');
-				$testimonial_author = '<span itemprop="author">' . get_post_meta( $post->ID, 'testimonial_author', true ) . '</span>';
+				$testimonial_author = '<span itemprop="author" class="author">' . get_post_meta( $post->ID, 'testimonial_author', true ) . '</span>';
 				if ( get_post_meta( $post->ID, 'testimonial_author_website' ) )
 					$testimonial_author_website = get_post_meta( $post->ID, 'testimonial_author_website', true );
 				if ( get_post_meta( $post->ID, 'testimonial_author_website_url' ) )
@@ -528,13 +530,13 @@ class product_testimonials_widget extends WP_Widget {
 				}
 				?>
 				<aside class="testimonial" itemprop="review" itemscope itemtype="http://schema.org/Review">
-					<span itemprop="description">
+					<span itemprop="description" class="description">
 						<?php the_content(); ?>
 					</span>
 					<?php if ( $source ) { echo '<div class="source">' . $source . '</div>'; } ?>
 				</aside>
 				<?php
-				endwhile;
+				endwhile; endif;
 				$wp_query = $temp;
 				$temp = null;
 				wp_reset_query();
