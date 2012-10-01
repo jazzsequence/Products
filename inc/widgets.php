@@ -30,30 +30,109 @@ class ap_product_meta_widget extends WP_Widget {
 		$post = $wp_query->post;
 
 		// widget options
-		$price_label = $instance['price-label'];
-		$item_num_label = $instance['item-num-label'];
-		$brand_label = $instance['brand-label'];
-		$model_label = $instance['model-label'];
-		$dimensions_label = $instance['dimensions-label'];
-		$notes_label = $instance['notes-label'];
-		$shipping_info_label = $instance['shipping-info-label'];
+		if ( $instance['price-label'] )
+			$price_label = '<span class="price-label">' . $instance['price-label'] . '</span>';
+		if ( $instance['item-num-label'] )
+			$item_num_label = '<span class="item-num-label">' . $instance['item-num-label'] . '</span>';
+		if ( $instance['brand-label'] )
+			$brand_label = '<span class="brand-label">' . $instance['brand-label'] . '</span>';
+		if ( $instance['model-label'] )
+			$model_label = '<span class="model-label">' . $instance['model-label'] . '</span>';
+		if ( $instance['dimensions-label'] )
+			$dimensions_label = '<span class="dimensions-label">' . $instance['dimensions-label'] . '</span>';
+		if ( $instance['notes-label'] )
+			$notes_label = '<span class="notes-label">' . $instance['notes-label'] . '</span>';
+		if ( $instance['shipping-info-label'] )
+			$shipping_info_label = '<span class="shipping-info-label">' . $instance['shipping-info-label'] . '</span>';
+		if ( $instance['product-details-label'] )
+			$product_details_label = '<span class="product-details-label">' . $instance['product-details-label'] . '</span>';
 
 		// product meta
-		$price = get_post_meta( $post->ID, 'price', true );
-		$item_num = get_post_meta( $post->ID, 'item_num', true );
-		$brand = get_post_meta( $post->ID, 'brand', true );
-		$model = get_post_meta( $post->ID, 'model', true );
-		$dimensions = get_post_meta( $post->ID, 'dimensions', true );
-		$notes = get_post_meta( $post->ID, 'notes', true );
-		$shipping_info = get_post_meta( $post->ID, 'shipping_info', true );
+		if ( get_post_meta( $post->ID, 'price' ) )
+			$price = get_post_meta( $post->ID, 'price', true );
+		if ( get_post_meta( $post->ID, 'item_num' ) )
+			$item_num = get_post_meta( $post->ID, 'item_num', true );
+		if ( get_post_meta( $post->ID, 'brand' ) )
+			$brand = get_post_meta( $post->ID, 'brand', true );
+		if ( get_post_meta( $post->ID, 'model' ) )
+			$model = get_post_meta( $post->ID, 'model', true );
+		if ( get_post_meta( $post->ID, 'dimensions' ) )
+			$dimensions = get_post_meta( $post->ID, 'dimensions', true );
+		if ( get_post_meta( $post->ID, 'notes' ) )
+			$notes = get_post_meta( $post->ID, 'notes', true );
+		if ( get_post_meta( $post->ID, 'shipping_info' ) )
+			$shipping_info = get_post_meta( $post->ID, 'shipping_info', true );
+		if ( get_post_meta( $post->ID, 'product_details' ) )
+			$product_details = get_post_meta( $post->ID, 'product_details', true );
 		$member_price = get_post_meta( $post->ID, 'member_price', true );
 		$is_members_active = $options['members'];
 		$inquire_link = $options['inquire-link'];
+		$product_meta = array( 'product_details' => $product_details, 'notes' => $notes, 'item_num' => $item_num, 'brand' => $brand, 'model' => $model, 'dimensions' => $dimensions, 'shipping_info' => $shipping_info  );
+
+		// this checks if any meta exists
+		$has_product_meta = array();
+		foreach ( $product_meta as $key => $value ) {
+			if (empty($value)) continue; // if the value is empty, don't use it
+			$has_product_meta[$key] = $value; // otherwise add it to the has_product_meta array
+		}
+
+		// ouput meta
+		$product_meta_out = $before_widget;
+		$product_meta_out .= '<section class="product-info" id="meta">';
+		$product_meta_out .= '<div class="productmeta">';
+		foreach ( $has_product_meta as $key => $value ) {
+			if ( $key == 'product_details' ) {
+				$product_meta_out .= '<div class="product-details">';
+				if ( $product_details_label )
+					$product_meta_out .= $product_details_label;
+				$product_meta_out .= $value . '</div>';
+			}
+			if ( $key == 'notes' ) {
+				$product_meta_out .= '<div class="notes">';
+				if ( $notes_label )
+					$product_meta_out .= $notes_label;
+				$product_meta_out .= $value . '</div>';
+			}
+			if ( $key == 'item_num' ) {
+				$product_meta_out .= '<div class="product-id" id="product-' . $value . '" itemprop="productID">';
+				if ( $item_num_label )
+					$product_meta_out .= $item_num_label;
+				$product_meta_out .= $value . '</div>';
+			}
+			if ( $key == 'model' ) { // model
+				$product_meta_out .= '<div class="model" id="model-' . $value . '" itemprop="model">';
+				if ( $model_label )
+					$product_meta_out .= $model_label;
+				$product_meta_out .= $value . '</div>';
+			}
+			if ( $key == 'brand' ) {
+				$product_meta_out .= '<div class="brand ' . $value . '" itemprop="brand">';
+				if ( $brand_label )
+					$product_meta_out .= $brand_label;
+				$product_meta_out .= $value . '</div>';
+			}
+			if ( $key == 'dimensions' ) {
+				$product_meta_out .= '<div class="dimensions">';
+				if ( $dimensions_label )
+					$product_meta_out .= $dimensions_label;
+				$product_meta_out .= $value . '</div>';
+			}
+			if ( $key == 'shipping_info' ) {
+				$product_meta_out .= '<div class="shipping-info">';
+				if ( $shipping_info_label )
+					$product_meta_out .= $shipping_info_label;
+				$product_meta_out .= $value . '</div>';
+			}
+		}
+		$product_meta_out .= '</div>';
+		$product_meta_out .= '</section>';
+		$product_meta_out .= $after_widget;
 
 		// determine whether we need to display the add to cart button or not
 		$inquire_sold_out = get_post_meta( $post->ID, 'inquire-sold-out', true );
 		switch ( $inquire_sold_out ) {
 			case 'none' :
+				echo $before_widget;
 				// inquire for price or sold out are not set, so we're displaying the cart button ?>
 				<div class="add_to_cart">
 				<?php
@@ -135,79 +214,47 @@ class ap_product_meta_widget extends WP_Widget {
 							if(get_post_meta($post->ID,'cart66_id')) // but we'll check to make sure there's a cart66 product id
 								echo do_shortcode('[add_to_cart item="' . $cart66_prod_id . '" img="' . $add_to_cart_path . '"]');
 						}
+						echo $after_widget;
 					?>
-					</div>
+					</div> <!-- closes purchase-button -->
+				</div><!-- closes add_to_cart -->
+				<?php
+				if ( !empty( $has_product_meta ) )
+					echo $product_meta_out;
+			break;
+			case 'inquire' :
+				if ( !empty( $has_product_meta ) )
+					echo $product_meta_out;
+				echo $before_widget;
+				// display an inquire for price ?>
+				<div class="inquire_for_price">
+					<?php if ( $inquire_link ) { ?>
+						<h3><a href="<?php echo $inquire_link; ?>"><?php _e( 'Inquire for price', 'products'); ?></a></h3>
+					<?php } else { ?>
+						<h3><?php _e( 'Inquire for price', 'products' ); ?></h3>
+					<?php } ?>
 				</div>
-			<?php break;
-				case 'inquire' :
-					// display an inquire for price ?>
-					<div class="inquire_for_price">
-						<?php if ( $inquire_link ) { ?>
-							<h3><a href="<?php echo $inquire_link; ?>"><?php _e( 'Inquire for price', 'products'); ?></a></h3>
-						<?php } else { ?>
-							<h3><?php _e( 'Inquire for price', 'products' ); ?></h3>
-						<?php } ?>
-					</div>
-				<?php break;
-				case 'soldout' :
-					// display a sold out ?>
-					<div class="sold_out">
-						<h3 class="strike">
-							<?php if ( $price_label )
-								echo $price_label;
-							echo $price; ?>
-						</h3>
-						<h3 class="sold"><?php _e( 'Sold Out!', 'products' ); ?></h3>
-					</div>
-				<?php break;
-		} // ends $inquire_sold_out switch
-	?>
-	<?php if ( ($price) || ($item_num) || ($brand) || ($model) || ($dimensions) || ($notes) || ($inquire_link) || ($shipping_info) ) { ?>
-			<section class="product-info" id="meta">
-				<?php echo $before_widget; ?>
-				<div class="productmeta">
-					<?php if ( $item_num ) {
-						echo '<span class="product-id" id="product-' . $item_num . '" itemprop="productID">';
-						if ( $item_num_label )
-							echo $item_num_label;
-						echo $item_num . '</span>';
-					}
-					if ( $model ) {
-						echo '<span class="model" id="model-' . $model . '" itemprop="model">';
-						if ( $model_label )
-							echo $model_label;
-						echo $model . '</span>';
-					}
-					if ( $brand ) {
-						echo '<span class="brand" itemprop="brand">';
-						if ( $brand_label )
-							echo $brand_label;
-						echo $brand . '</span>';
-					}
-					if ( $dimensions ) {
-						echo '<span class="dimensions">';
-						if ( $dimensions_label )
-							echo $dimensions_label;
-						echo $dimensions . '</span>';
-					}
-					if ( $notes ) {
-						echo '<span class="notes">';
-						if ( $notes_label )
-							echo $notes_label;
-						echo $notes . '</span>';
-					}
-					if ( $shipping_info ) {
-						if ( $shipping_info_label )
-							echo $shipping_info_label;
-						echo $shipping_info;
-					}?>
+			<?php echo $after_widget;
+			break;
+			case 'soldout' :
+				echo $before_widget;
+				// display a sold out ?>
+				<div class="sold_out">
+					<h3 class="strike">
+						<?php if ( $price_label )
+							echo $price_label;
+						echo $price; ?>
+					</h3>
+					<h3 class="sold"><?php _e( 'Sold Out!', 'products' ); ?></h3>
 				</div>
-				<div class="clear"></div>
-			</section>
 			<?php
-			wp_reset_query();
-			echo $after_widget;
-		}
+				echo $after_widget;
+				if ( !empty( $has_product_meta ) )
+					echo $product_meta_out;
+			break;
+		} // ends $inquire_sold_out switch
+		wp_reset_query();
+		echo $after_widget;
 	}
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
@@ -220,6 +267,8 @@ class ap_product_meta_widget extends WP_Widget {
 		$instance['model-label'] = sanitize_text_field( $new_instance['model-label'] );
 		$instance['dimensions-label'] = sanitize_text_field( $new_instance['dimensions-label'] );
 		$instance['notes-label'] = sanitize_text_field( $new_instance['notes-label'] );
+		$instance['shipping-info-label'] = sanitize_text_field( $new_instance['shipping-info-label'] );
+		$instance['product-details-label'] = sanitize_text_field( $new_instance['product-details-label'] );
 
 		$instance['title'] = strip_tags( $new_instance['title'] );
 		$instance['num_posts'] = strip_tags( $new_instance['num_posts'] );
@@ -240,14 +289,15 @@ class ap_product_meta_widget extends WP_Widget {
 			'model-label' => __( 'Model: ', 'products' ),
 			'dimensions-label' => __( 'Dimensions: ', 'products' ),
 			'notes-label' => __( 'Notes: ', 'products' ),
-			'shipping-info-label' => __( 'Shipping Info: ', 'products' )
+			'shipping-info-label' => __( 'Shipping Info: ', 'products' ),
+			'product-details-label' => __( 'Description:', 'products' )
 		);
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 		<?php if ( $cart66 ) { ?>
-		<p>
-			<label for="<?php echo $this->get_field_id( 'price-label' ); ?>"><?php _e( 'Price label:', 'products' ); ?></label>
-			<input type="text" id="<?php echo $this->get_field_id( 'price-label' ); ?>" name="<?php echo $this->get_field_name( 'price-label' ); ?>" class="widefat" value="<?php echo $instance['price-label']; ?>" />
-		</p>
+			<p>
+				<label for="<?php echo $this->get_field_id( 'price-label' ); ?>"><?php _e( 'Price label:', 'products' ); ?></label>
+				<input type="text" id="<?php echo $this->get_field_id( 'price-label' ); ?>" name="<?php echo $this->get_field_name( 'price-label' ); ?>" class="widefat" value="<?php echo $instance['price-label']; ?>" />
+			</p>
 		<?php } ?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'item-num-label' ); ?>"><?php _e( 'Item number label:', 'products' ); ?></label>
@@ -268,6 +318,10 @@ class ap_product_meta_widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'notes-label' ); ?>"><?php _e( 'Notes label:', 'products' ); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'notes-label' ); ?>" name="<?php echo $this->get_field_name( 'notes-label' ); ?>" class="widefat" value="<?php echo $instance['notes-label']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'product-details-label' ); ?>"><?php _e( 'Product Description label:', 'products' ); ?></label>
+			<input type="text" id="<?php echo $this->get_field_id( 'product-details-label' ); ?>" name="<?php echo $this->get_field_name( 'product-details-label' ); ?>" class="widefat" value="<?php echo $instance['product-details-label']; ?>" />
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'shipping-info-label' ); ?>"><?php _e( 'Shipping Info label:', 'products' ); ?></label>
