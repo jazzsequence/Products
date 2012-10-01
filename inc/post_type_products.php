@@ -266,9 +266,13 @@ function ap_products_sales_meta() {
 			}
 		}
     }
-	echo '<label for="shipping_info"><strong>Shipping Information</strong></label>';
+	echo '<p><label for="product_details"><strong>Product Description</strong></label>';
+	wp_editor( wp_kses_data( get_post_meta( $post->ID, 'product_details', true ) ), 'product_details', array('media_buttons' => false, 'textarea_rows' => 5, 'editor_class' => 'widefat', 'teeny' => true, 'editor_css' => '<style type="text/css">html .mceIframeContainer { background: #fff; }</style>') );
+	echo '<br /><em>(Optional) Product information can go here.</em></p>';
+
+	echo '<p><label for="shipping_info"><strong>Shipping Information</strong></label>';
 	wp_editor( wp_kses_data( get_post_meta( $post->ID, 'shipping_info', true ) ), 'shipping_info', array('media_buttons' => false, 'textarea_rows' => 5, 'editor_class' => 'widefat', 'teeny' => true, 'editor_css' => '<style type="text/css">html .mceIframeContainer { background: #fff; }</style>') );
-	echo '<p><em>(Optional) Shipping information can be entered here.</em></p>';
+	echo '<br /><em>(Optional) Shipping information can be entered here.</em></p>';
 
 	echo '<label for="notes"><strong>Other notes</strong></label>';
 	wp_editor( wp_kses_data( get_post_meta($post->ID, 'notes', true) ), 'notes', array('media_buttons' => false, 'textarea_rows' => 5, 'editor_class' => 'widefat', 'teeny' => true) );
