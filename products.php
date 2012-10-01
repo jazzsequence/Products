@@ -264,6 +264,7 @@ function ap_products_insert_post_data($data,$postarr) {
 		update_post_meta($postarr['ID'], 'dimensions', $postarr['dimensions']);
 		update_post_meta($postarr['ID'], 'shipping_info', $postarr['shipping_info']);
 		update_post_meta($postarr['ID'], 'notes', $postarr['notes']);
+		update_post_meta($postarr['ID'], 'product_details', $postarr['product_details']);
 	}
 	return $data;
 }
