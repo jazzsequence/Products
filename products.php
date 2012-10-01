@@ -4,7 +4,7 @@ Plugin Name: Products
 git uri: https://github.com/jazzsequence/Products
 Plugin URI: http://www.museumthemes.com
 Description: A simple shop plugin based on custom post types with integrated support for Cart66
-Version: 0.8.1
+Version: 0.8.2
 Author: Arcane Palette Creative Design
 Author URI: http://arcanepalette.com/
 License: GPL3
