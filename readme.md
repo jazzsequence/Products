@@ -29,6 +29,12 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 * removed some debug code
 * hid the price label if cart66 is the merchant being used
 * removed conditional check for cart66 around item number
+* fixed shipping info not line breaking after cart66 product dropdown
+* checks if value exists before defining each label for the info widget
+* checks if value exists before defining the content for the info widget
+* adds all meta info to an array and loops through to display data
+* rewrite and fix of widget output
+* added new product description meta field
 
 ### 0.8.1
 
