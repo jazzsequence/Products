@@ -116,11 +116,9 @@ function ap_products_info_meta() {
 	echo '</select><br />';
 	echo '<em>(Optional) Define whether the product should be set to "Inquire for price" or sold out.</em></p>';
 
-	if ( $options['products-merchant'] != 'cart66' ) {
-		echo '<p><label for="item_num"><strong>Item Number</strong></label><br />';
-		echo '<input class="widefat" type="text" name="item_num" value="' . get_post_meta( $post->ID, 'item_num', true ) . '" /><br />';
-		echo '<em>(Optional) Unique item/model number.</em></p>';
-	}
+	echo '<p><label for="item_num"><strong>Item Number</strong></label><br />';
+	echo '<input class="widefat" type="text" name="item_num" value="' . get_post_meta( $post->ID, 'item_num', true ) . '" /><br />';
+	echo '<em>(Optional) Unique item/model number.</em></p>';
 
 	echo '<p><label for="brand"><strong>Brand</strong></label><br />';
 	echo '<input class="widefat" type="text" name="brand" value="' . get_post_meta( $post->ID, 'brand', true ) . '" /><br />';

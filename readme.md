@@ -28,6 +28,7 @@ Extract the zip file and just drop the contents in the `wp-content/plugins/` dir
 
 * removed some debug code
 * hid the price label if cart66 is the merchant being used
+* removed conditional check for cart66 around item number
 
 ### 0.8.1
 
