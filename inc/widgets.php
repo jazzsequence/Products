@@ -228,6 +228,9 @@ class ap_product_meta_widget extends WP_Widget {
 		return $instance;
 	}
 	function form( $instance ) {
+		$options = get_option( 'ap_products_settings' );
+		if ( $options['products-merchant'] == 'cart66' )
+			$cart66 = true;
 
 		/* Set up some default widget settings. */
 		$defaults = array(
@@ -240,10 +243,12 @@ class ap_product_meta_widget extends WP_Widget {
 			'shipping-info-label' => __( 'Shipping Info: ', 'products' )
 		);
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		<?php if ( $cart66 ) { ?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'price-label' ); ?>"><?php _e( 'Price label:', 'products' ); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'price-label' ); ?>" name="<?php echo $this->get_field_name( 'price-label' ); ?>" class="widefat" value="<?php echo $instance['price-label']; ?>" />
 		</p>
+		<?php } ?>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'item-num-label' ); ?>"><?php _e( 'Item number label:', 'products' ); ?></label>
 			<input type="text" id="<?php echo $this->get_field_id( 'item-num-label' ); ?>" name="<?php echo $this->get_field_name( 'item-num-label' ); ?>" class="widefat" value="<?php echo $instance['item-num-label']; ?>" />
@@ -333,7 +338,6 @@ class product_cross_sales_widget extends WP_Widget {
 				'orderby'=>'rand'
 			);
 			$tag_query = new WP_Query($args);
-			//echo '<h1> fuck ' . get_post_meta($post->ID,'cross_sales',true) . '</h1>';
 			if(( $tag_query->have_posts() ) )  {
 				echo $before_widget;
 				echo $related_label . '<br />';
