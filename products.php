@@ -29,7 +29,7 @@ License: GPL3
 	define('product_plugin_path', WP_PLUGIN_URL . '/ap-products/');
 	define('product_plugin_dir', WP_PLUGIN_DIR . '/ap-products/');
 	define('product_plugin_images', product_plugin_path . 'images/');
-	include_once( product_plugin_dir . 'inc/updater.php' );
+	// include_once( product_plugin_dir . 'inc/updater.php' );
 	include_once( product_plugin_dir . 'inc/post_type_products.php' );
 	include_once( product_plugin_dir . 'inc/post_type_testimonials.php' );
 	include_once( product_plugin_dir . 'inc/widgets.php' );
@@ -110,6 +110,10 @@ function products_inquire_sold_out_options() {
 		'none' => array(
 			'value' => 'none',
 			'label' => __( ' - None - ', 'products' )
+		),
+		'forsale' => array(
+			'value' => 'forsale',
+			'label' => __( 'For Sale', 'products' )
 		),
 		'inquire' => array(
 			'value' => 'inquire',

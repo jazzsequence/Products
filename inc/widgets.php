@@ -77,8 +77,7 @@ class ap_product_meta_widget extends WP_Widget {
 		}
 
 		// ouput meta
-		$product_meta_out = $before_widget;
-		$product_meta_out .= '<section class="product-info" id="meta">';
+		$product_meta_out = '<section class="product-info" id="meta">';
 		$product_meta_out .= '<div class="productmeta">';
 		foreach ( $has_product_meta as $key => $value ) {
 			if ( $key == 'product_details' ) {
@@ -126,12 +125,11 @@ class ap_product_meta_widget extends WP_Widget {
 		}
 		$product_meta_out .= '</div>';
 		$product_meta_out .= '</section>';
-		$product_meta_out .= $after_widget;
 
 		// determine whether we need to display the add to cart button or not
 		$inquire_sold_out = get_post_meta( $post->ID, 'inquire-sold-out', true );
 		switch ( $inquire_sold_out ) {
-			case 'none' :
+			case 'forsale' :
 				echo $before_widget;
 				// inquire for price or sold out are not set, so we're displaying the cart button ?>
 				<div class="add_to_cart">
@@ -182,7 +180,6 @@ class ap_product_meta_widget extends WP_Widget {
 							$paypal_button_url_members = get_post_meta( $post->ID, 'paypal_button_url_members', true );
 							$google_button_url = get_post_meta( $post->ID, 'google_button_url', true );
 							$google_button_url_members = get_post_meta( $post->ID, 'google_button_url_members', true );
-							$cart66_prod_id = get_post_meta($post->ID,'cart66_id', true);
 							switch ( $options['products-html'] ) {
 								case 'url' : // if we're using a direct url
 									if( $is_paypal && $paypal_button_url ) {
@@ -211,16 +208,18 @@ class ap_product_meta_widget extends WP_Widget {
 								break;
 							}
 						} else { // we're using cart66
+						$cart66_prod_id = get_post_meta($post->ID,'cart66_id', true);
 							if(get_post_meta($post->ID,'cart66_id')) // but we'll check to make sure there's a cart66 product id
 								echo do_shortcode('[add_to_cart item="' . $cart66_prod_id . '" img="' . $add_to_cart_path . '"]');
 						}
-						echo $after_widget;
 					?>
 					</div> <!-- closes purchase-button -->
 				</div><!-- closes add_to_cart -->
 				<?php
 				if ( !empty( $has_product_meta ) )
 					echo $product_meta_out;
+				echo $after_widget;
+
 			break;
 			case 'inquire' :
 				if ( !empty( $has_product_meta ) )
@@ -251,6 +250,12 @@ class ap_product_meta_widget extends WP_Widget {
 				echo $after_widget;
 				if ( !empty( $has_product_meta ) )
 					echo $product_meta_out;
+			break;
+			case 'none' :
+				if ( !empty( $has_product_meta ) )
+					echo $product_meta_out;
+				echo $before_widget;
+				echo $after_widget;
 			break;
 		} // ends $inquire_sold_out switch
 		wp_reset_query();
@@ -707,7 +712,7 @@ class products_related_widget extends WP_Widget {
 			$wp_query = null;
 			$wp_query = new WP_Query();
 			$wp_query->query($args);
-				while ($wp_query->have_posts()) : $wp_query->the_post(); ?>			
+				while ($wp_query->have_posts()) : $wp_query->the_post(); ?>
 					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array($thumb_size,$thumb_size,true)); ?></a>
 			<?php endwhile;
 			$wp_query = $temp;
@@ -744,7 +749,7 @@ class products_related_widget extends WP_Widget {
 				$wp_query = null;
 				$wp_query = new WP_Query();
 				$wp_query->query($args);
-					while ($wp_query->have_posts()) : $wp_query->the_post(); ?>			
+					while ($wp_query->have_posts()) : $wp_query->the_post(); ?>
 						<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_post_thumbnail(array($thumb_size,$thumb_size,true)); ?></a>
 				<?php endwhile;
 				$wp_query = $temp;
