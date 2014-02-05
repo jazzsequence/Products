@@ -35,7 +35,7 @@ function post_type_products() {
 		'hierarchical' => false,
 		'supports' => array( 'title','editor','thumbnail' ),
 		'exclude_from_search' => false,
-		'menu_position' => 5,
+		//'menu_position' => 5,
 		'taxonomies' => array('post_tag','product_category'),
   	);
 
@@ -54,7 +54,7 @@ add_action( 'init', 'post_type_products', 0 );
  * @since 0.7
  * @uses add_meta_box
  * loads all the meta boxes in one place
- * adds additional meta information for products.  
+ * adds additional meta information for products.
  */
 function ap_products_metaboxes() {
 	$options = get_option( 'ap_products_settings' );

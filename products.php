@@ -26,8 +26,8 @@ License: GPL3
 
 /* 	let's define some global values we're going to use later
 	we're going to assume you're using wp 2.6+ and not worry about defining WP_PLUGIN_URL */
-	define('product_plugin_path', WP_PLUGIN_URL . '/products/');
-	define('product_plugin_dir', WP_PLUGIN_DIR . '/products/');
+	define('product_plugin_path', WP_PLUGIN_URL . '/ap-products/');
+	define('product_plugin_dir', WP_PLUGIN_DIR . '/ap-products/');
 	define('product_plugin_images', product_plugin_path . 'images/');
 	include_once( product_plugin_dir . 'inc/updater.php' );
 	include_once( product_plugin_dir . 'inc/post_type_products.php' );

@@ -31,7 +31,7 @@ function ap_post_type_testimonials() {
 		'rewrite' => false,
 		'capability_type' => 'post',
 		'hierarchical' => false,
-		'menu_position' => 6,
+		//'menu_position' => 6,
 		'supports' => array( 'editor' ),
 		'exclude_from_search' => true
   );
